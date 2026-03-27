@@ -78,7 +78,7 @@ RESET = \033[0m
 tests: compile $(ALL_TESTS)
 
 compile:
-	@$(MAKE) -C ..
+	@$(MAKE) -C .. --no-print-directory; printf "\n";
 
 # version tests
 test_01:
