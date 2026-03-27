@@ -75,7 +75,10 @@ RED   = \033[31m
 GREEN = \033[32m
 RESET = \033[0m
 
-tests: $(ALL_TESTS)
+tests: compile $(ALL_TESTS)
+
+compile:
+	@$(MAKE) -C ..
 
 # version tests
 test_01:
