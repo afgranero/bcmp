@@ -1,0 +1,8 @@
+../bcmp: unrecognized option '--skip0xa0'
+Usage: ../bcmp [options] file1 file2
+Options:
+  -q, --quiet    quiet mode (exit 1 if different, 0 if equal)
+  -n, --limit N  max differences shown (default 100, 0 to show all)
+  -s, --skip N   skip first N bytes (supports hex 0x...)
+  -h, --help     display this help and exit
+  -v, --version  output version information and exit
