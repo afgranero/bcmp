@@ -1,1 +1,1 @@
-Error opening file: '/tmp/file_09.bin'.
+Error opening file: '/tmp/file_09.bin': Permission denied.

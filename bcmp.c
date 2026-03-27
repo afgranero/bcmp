@@ -1,8 +1,29 @@
+#if !defined(_WIN32) && !defined(_MSDOS)
+    #define _POSIX_C_SOURCE 200112L
+#endif
+
 #include <stdio.h>
+#include <sys/types.h>
+
+#if defined(_WIN32) || defined(_MSDOS)
+    #if defined(_MSC_VER) || defined(__MINGW32__)
+        #define fseeko _fseeki64
+        #define ftello _ftelli64
+        typedef __int64 off_t;
+    #else
+        #define fseeko fseek
+        #define ftello ftell
+        #ifndef _OFF_T_DEFINED
+            typedef long off_t;
+            #define _OFF_T_DEFINED
+        #endif
+    #endif
+#endif
+
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include <getopt.h> // Required for long options
+#include <errno.h>
+#include <getopt.h>
 
 #define BUFFER_SIZE 65536
 
@@ -51,22 +72,30 @@ unsigned long parse_num(const char *str) {
 FILE* safe_fopen(char *filename) {
     FILE *f = fopen(filename, "rb");
     if (!f) {
-        fprintf(stderr, "Error opening file: '%s'.\n", filename);
+        fprintf(stderr, "Error opening file: '%s': %s.\n", filename, strerror(errno));
         exit(2);
     }
     return f;
 }
 
-int safe_fseek(char *filename, FILE *f, long int skip) {
-    fseek(f, 0, SEEK_END);
-    long size = ftell(f);
-    if (skip > size) {
-        fprintf(stderr, "Error: Skip '%lu' is larger than size '%ld' of file '%s'.\n", skip, size, filename);
+void safe_fseek(char *filename, FILE *f, off_t skip) {
+    if (fseeko(f, 0, SEEK_END) != 0) {
+        fprintf(stderr, "Error: could not skip to end of file '%s': %s.\n", filename, strerror(errno));
+    }
+
+    off_t size = ftello(f);
+    if (size == -1) {
+        fprintf(stderr, "Error: could not read size of file '%s': %s", filename, strerror(errno));
         exit(2);
     }
 
-    if (fseek(f, skip, SEEK_SET) != 0) {
-        fprintf(stderr, "Error: Could not skip to offset 0x%lx in file '%s'.\n", skip, filename);
+    if (skip > size) {
+        fprintf(stderr, "Error: Skip '%llu' is larger than size '%lld' of file '%s'.\n", (long long)skip, (long long)size, filename);
+        exit(2);
+    }
+
+    if (fseeko(f, skip, SEEK_SET) != 0) {
+        fprintf(stderr, "Error: could not skip to offset 0x%llx in file '%s': %s.\n", (long long)skip, filename, strerror(errno));
         fclose(f);
         exit(2);
     }    
@@ -86,10 +115,10 @@ int safe_fseek(char *filename, FILE *f, long int skip) {
 int main(int argc, char *argv[]) {
     int opt;
     int quiet = 0;
-    unsigned long limit = 100;
-    unsigned long skip = 0;
-    unsigned long diff_count = 0;
-    unsigned long offset;
+    off_t limit = 100;
+    off_t skip = 0;
+    off_t diff_count = 0;
+    off_t offset;
     int result = 0;
 
     // long options mapping
