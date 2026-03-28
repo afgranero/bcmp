@@ -36,6 +36,22 @@
 #define BITS sizeof(off_t) * 8
 #define OFF_T_MAX ((1ULL << (BITS - 1)) - 1)
 
+char* file_size_limit(void) {
+    // it is overkill, as it will have 16 or 32 bytes, but it is funny
+    static char buffer[32];
+    const char *units[] = {"B", "kB", "MB", "GB", "TB", "PB", "EB"};
+    double valor = (double)OFF_T_MAX;
+
+    int i = 0;
+    while (valor >= 1000 && i < 6) {
+        valor /= 1000;
+        i++;
+    }
+
+    sprintf(buffer, "%.2f %s", valor, units[i]);
+    return buffer;
+}
+
 void print_help(FILE *out, char *prog) {
     fprintf(out, "Usage: %s [options] file1 file2\n", prog);
     fprintf(out, "Options:\n"
@@ -53,7 +69,9 @@ void print_version() {
                     "License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.\n"
                     "This is free software: you are free to change and redistribute it.\n"
                     "There is NO WARRANTY, to the extent permitted by law.\n"
-            , BITS);
+                    "\n"
+                    "Max file size %s.\n"
+            , BITS, file_size_limit());
 }   
 
 off_t parse_num(const char *str) {
