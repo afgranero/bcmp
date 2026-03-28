@@ -1,4 +1,4 @@
-bcmp, a reimagined cmp (GNU diffutils) 1.0
+bcmp 1.0 64-bit. A reimagined cmp (GNU diffutils).
 Copyright (C) Airton da Fonseca Granero.
 License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
 This is free software: you are free to change and redistribute it.

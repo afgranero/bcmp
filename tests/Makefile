@@ -68,10 +68,12 @@ ALL_TESTS = test_01 \
 			test_64 \
 			test_65 \
 			test_66 \
-			test_67
+			test_67 \
+			test_68
 
 
 RED   = \033[31m
+YELLOW = \033[1;33m
 GREEN = \033[32m
 RESET = \033[0m
 
@@ -1303,7 +1305,7 @@ test_65:
 	)
 
 test_66:
-	@# test if "../bcmp --helpa" returns 2 and error messaage and help text in stderr
+	@# test if "../bcmp --helpa" returns 2 and error messaage and help text in stderr,
 	@# long option names must match completelly
 	@(\
 		CMD="$(TARGET) --helpa"; \
@@ -1320,7 +1322,7 @@ test_66:
 	)
 
 test_67:
-	@# test if "../bcmp -qs4097 file_01.bin file_02.bin" returns 2 and error messaage in stderr
+	@# test if "../bcmp -qs4097 file_01.bin file_02.bin" returns 2 and error messaage in stderr,
 	@# one letter options can be fused in one, here -q -s4097
 	@(\
 		CMD="$(TARGET) -qs4097 file_01.bin file_02.bin"; \
@@ -1334,4 +1336,31 @@ test_67:
 		printf "$@ item 2: "; \
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
 		printf "\n"; \
+	)
+
+# testes de arquivos grandes
+test_68:
+	@# test if "../bcmp --skip 4800000000 file_5gb.bin file_5gb.bin" returns 0 and error message in stdout,
+	@# test with files bigger than 2Gb
+	@(\
+		FS_TYPE=$$(stat -f -c %T . 2>/dev/null || echo "unknown"); \
+		printf "$@ "; \
+		if [ "$$FS_TYPE" = "ext2/ext3" ] || [ "$$FS_TYPE" = "ext4" ] || [ "$$FS_TYPE" = "xfs" ] || [ "$$FS_TYPE" = "apfs" ]; then \
+			rm -f file_5gb.bin; \
+			truncate -s 5G file_5gb.bin; \
+			CMD="$(TARGET) --skip 4800000000 file_5gb.bin file_5gb.bin"; \
+			STDOUT=$$($$CMD >&1 2>/dev/null); \
+			printf "item 1: "; \
+			EXIT_VAL=$$?; \
+			if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+			\
+			echo "$$STDOUT" | diff -q - message_01.txt > /dev/null 2>&1; \
+			EXIT_VAL=$$?; \
+			printf "$@ item 2: "; \
+			if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+			rm -f file_5gb.bin; \
+			printf "\n"; \
+		else \
+			echo "$(YELLOW)Skipped: file system ($$FS_TYPE) may not support sparse files.$(RESET)."; \
+		fi; \
 	)

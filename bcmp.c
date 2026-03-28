@@ -33,7 +33,8 @@
 // ... however, the compiler (GCC) may still support 64-bit 'long long' (8 bytes), ...
 // ... on newer systems is 64-bit (8 bytes), allowing offsets of 16EB, ...
 // ... MAX_OFF_T is dynamically calculated to handle this gap.
-#define OFF_T_MAX ((1ULL << (sizeof(off_t) * 8 - 1)) - 1)
+#define BITS sizeof(off_t) * 8
+#define OFF_T_MAX ((1ULL << (BITS - 1)) - 1)
 
 void print_help(FILE *out, char *prog) {
     fprintf(out, "Usage: %s [options] file1 file2\n", prog);
@@ -47,12 +48,12 @@ void print_help(FILE *out, char *prog) {
 }
 
 void print_version() {
-    fprintf(stdout, "bcmp, a reimagined cmp (GNU diffutils) 1.0\n"
+    fprintf(stdout, "bcmp 1.0 %ld-bit. A reimagined cmp (GNU diffutils).\n"
                     "Copyright (C) Airton da Fonseca Granero.\n"
                     "License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.\n"
                     "This is free software: you are free to change and redistribute it.\n"
                     "There is NO WARRANTY, to the extent permitted by law.\n"
-            );
+            , BITS);
 }   
 
 off_t parse_num(const char *str) {
