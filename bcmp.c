@@ -21,11 +21,19 @@
 #endif
 
 #include <stdlib.h>
+#include <limits.h>
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
 
 #define BUFFER_SIZE 65536
+
+// On legacy 32-bit Intel architectures (i386 through early Pentium 4), ...
+// ... 'off_t' is typically 32-bit (4 bytes), limiting file offsets to 2GB, ...
+// ... however, the compiler (GCC) may still support 64-bit 'long long' (8 bytes), ...
+// ... on newer systems is 64-bit (8 bytes), allowing offsets of 16EB, ...
+// ... MAX_OFF_T is dynamically calculated to handle this gap.
+#define OFF_T_MAX ((1ULL << (sizeof(off_t) * 8 - 1)) - 1)
 
 void print_help(FILE *out, char *prog) {
     fprintf(out, "Usage: %s [options] file1 file2\n", prog);
@@ -47,26 +55,41 @@ void print_version() {
             );
 }   
 
-unsigned long parse_num(const char *str) {
+off_t parse_num(const char *str) {
     char *endptr;
     
     // Skip leading whitespace manually
     while (*str == ' ' || *str == '\t') str++;
 
 
-    // strtoul returns unsigned int but receiving a negative number returns a two's complement negation ...
+    // strtoull returns unsigned long long but receiving a negative number returns a two's complement negation ...
     // .. so check if the first character is a minus sign.
     if (*str == '-') {
         fprintf(stderr, "Error: Negative numbers are not allowed: '%s'\n", str);
         exit(2);
     }
 
-    unsigned long val = strtoul(str, &endptr, 0);
+    unsigned long long val = strtoull(str, &endptr, 0);
     if (str == endptr || *endptr != '\0') {
         fprintf(stderr, "Error: '%s' is not a valid number.\n", str);
         exit(2);
     }
-    return val;
+
+    if (errno == ERANGE) {
+        fprintf(stderr, "Error: '%s' overflows internal representation for parameters.\n", str);
+        exit(2);
+    }
+
+    // in some legaxy 32-bit systems sizeof(OFF_T_MAX) < sizeof(unsigned long long)
+    if (val > OFF_T_MAX) {
+        fprintf(stderr, "Error: '%s' overflows internal representation for counters.\n", str);
+        exit(1);
+    }
+
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wconversion"
+    return (off_t)val;;
+    #pragma GCC diagnostic pop
 }
 
 FILE* safe_fopen(char *filename) {
