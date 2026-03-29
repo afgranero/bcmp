@@ -70,7 +70,13 @@ ALL_TESTS = test_01 \
 			test_66 \
 			test_67 \
 			test_68 \
-			test_69
+			test_69 \
+			test_70 \
+			test_71 \
+			test_72 \
+			test_73 \
+			test_74 \
+			test_75
 
 RED   = \033[31m
 YELLOW = \033[33m
@@ -1047,6 +1053,8 @@ test_50:
 		printf "\n"; \
 	)
 
+# TODO test files bigger than 54536 equal and different skiping more than 65536 byes in a file bigger than that euqal and different
+
 # options and argument error tests (dependent on getopt behavior put here to clarify its behavior)
 test_51:
 	@# test if "../bcmp --skip-10 file_01.bin file_02.bin" returns 2 and error message in stderr,
@@ -1344,8 +1352,121 @@ test_67:
 		printf "\n"; \
 	)
 
-# testes de arquivos grandes
+
+# tests for files bigger than the buffer size
 test_68:
+	@# test if "../bcmp file_13.bin file_14.bin" returns 0 and message in stdout,
+	@# files are equal
+	@# files are bigger than 65535 bytes (the size of the buffer)
+	@(\
+		CMD="$(TARGET) file_13.bin file_14.bin"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_01.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		printf "\n"; \
+	)
+
+test_69:
+	@# test if "../bcmp -n0 file_13.bin file_15.bin" returns 1 and message in stdout,
+	@# files are different
+	@# files are bigger than 65536 bytes (the size of the buffer)
+	@(\
+		CMD="$(TARGET) -n0 file_13.bin file_15.bin"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_30.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		printf "\n"; \
+	)
+
+test_70:
+	@# test if "../bcmp -n0 file_15.bin file_13.bin" returns 1 and message in stdout,
+	@# files are different
+	@# files are bigger than 65536 bytes (the size of the buffer)
+	@(\
+		CMD="$(TARGET) -n0 file_15.bin file_13.bin"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_31.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		printf "\n"; \
+	)
+
+test_71:
+	@# test if "../bcmp -s131500 -n0 file_13.bin file_14.bin" returns 0 and message in stdout,
+	@# files are equal
+	@# skipping more then 65536 bytes
+	@# files are bigger than 65536 bytes (the size of the buffer)
+	@(\
+		CMD="$(TARGET) -n0 file_13.bin file_14.bin"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_01.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		printf "\n"; \
+	)
+
+test_72:
+	@# test if "../bcmp -s131500 -n0 file_13.bin file_15.bin" returns 1 and message in stdout,
+	@# files are different
+	@# skipping more then 65536 bytes
+	@# files are bigger than 65536 bytes (the size of the buffer)
+	@(\
+		CMD="$(TARGET) -s131500 -n0 file_13.bin file_15.bin"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_32.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		printf "\n"; \
+	)
+
+test_73:
+	@# test if "../bcmp -s131500 -n0 file_15.bin file_13.bin" returns 1 and message in stdout,
+	@# files are different
+	@# skipping more then 65536 bytes
+	@# files are bigger than 65536 bytes (the size of the buffer)
+	@(\
+		CMD="$(TARGET) -s131500 -n0 file_15.bin file_13.bin"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_33.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		printf "\n"; \
+	)
+
+# big files tests
+test_74:
 	@# test if "../bcmp --skip 4800000000 file_5gb.bin file_5gb.bin" returns 0 and message in stdout,
 	@# files bigger than 2Gb
 	@# files are the same
@@ -1372,7 +1493,7 @@ test_68:
 		fi; \
 	)
 
-test_69:
+test_75:
 	@# test if "../bcmp --skip 4800000000 file_5gb_1.bin file_5gb_2.bin" returns 0 and message in stdout,
 	@# files bigger than 2Gb
 	@# files are different
