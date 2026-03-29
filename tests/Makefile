@@ -69,11 +69,11 @@ ALL_TESTS = test_01 \
 			test_65 \
 			test_66 \
 			test_67 \
-			test_68
-
+			test_68 \
+			test_69
 
 RED   = \033[31m
-YELLOW = \033[1;33m
+YELLOW = \033[33m
 GREEN = \033[32m
 RESET = \033[0m
 
@@ -653,7 +653,7 @@ test_28:
 
 test_29:
 	@# test if "../bcmp -q file_01.bin file_06.bin" return 1 and no message,
-	@# files of different size,
+	@# files of different sizes,
 	@# files equal until the last byte os the smaller one,
 	@# quiet mode
 	@(\
@@ -667,6 +667,8 @@ test_29:
 		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
 		printf "\n"; \
 	)
+
+# TODO two tests with both files of different sizes reversed
 
 # error tests
 test_30:
@@ -823,7 +825,7 @@ test_37:
 	)
 
 test_38:
-	@# test if "../bcmp -s4 ile_07.bin file_07.bin " returns 2 and error message in stderr,
+	@# test if "../bcmp -s4 file_07.bin file_07.bin " returns 2 and error message in stderr,
 	@# skips past the end of both files
 	@(\
 		CMD="$(TARGET) -s4 file_01.bin file_07.bin"; \
@@ -1344,8 +1346,9 @@ test_67:
 
 # testes de arquivos grandes
 test_68:
-	@# test if "../bcmp --skip 4800000000 file_5gb.bin file_5gb.bin" returns 0 and error message in stdout,
-	@# test with files bigger than 2Gb
+	@# test if "../bcmp --skip 4800000000 file_5gb.bin file_5gb.bin" returns 0 and message in stdout,
+	@# files bigger than 2Gb
+	@# files are the same
 	@(\
 		FS_TYPE=$$(stat -f -c %T . 2>/dev/null || echo "unknown"); \
 		printf "$@ "; \
@@ -1354,8 +1357,8 @@ test_68:
 			truncate -s 5G file_5gb.bin; \
 			CMD="$(TARGET) --skip 4800000000 file_5gb.bin file_5gb.bin"; \
 			STDOUT=$$($$CMD >&1 2>/dev/null); \
-			printf "item 1: "; \
 			EXIT_VAL=$$?; \
+			printf "item 1: "; \
 			if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
 			\
 			echo "$$STDOUT" | diff -q - message_01.txt > /dev/null 2>&1; \
@@ -1365,6 +1368,38 @@ test_68:
 			rm -f file_5gb.bin; \
 			printf "\n"; \
 		else \
-			echo "$(YELLOW)Skipped: file system ($$FS_TYPE) may not support sparse files.$(RESET)."; \
+			printf "$(YELLOW)Skipped$(RESET): file system '$$FS_TYPE' may not support sparse files.\n"; \
+		fi; \
+	)
+
+test_69:
+	@# test if "../bcmp --skip 4800000000 file_5gb_1.bin file_5gb_2.bin" returns 0 and message in stdout,
+	@# files bigger than 2Gb
+	@# files are different
+	@(\
+		FS_TYPE=$$(stat -f -c %T . 2>/dev/null || echo "unknown"); \
+		printf "$@ "; \
+		if [ "$$FS_TYPE" = "ext2/ext3" ] || [ "$$FS_TYPE" = "ext4" ] || [ "$$FS_TYPE" = "xfs" ] || [ "$$FS_TYPE" = "apfs" ]; then \
+			rm -f file_5gb_1.bin; \
+			rm -f file_5gb_2.bin; \
+			truncate -s 5G file_5gb_1.bin; \
+			printf '\xC\xB\xA' >> file_5gb_1.bin; \
+			truncate -s 5G file_5gb_2.bin; \
+			printf '\xA\xB\xC' >> file_5gb_2.bin; \
+			CMD="$(TARGET) --skip 4800000000 file_5gb_1.bin file_5gb_2.bin"; \
+			STDOUT=$$($$CMD >&1 2>/dev/null); \
+			EXIT_VAL=$$?; \
+			printf "item 1: "; \
+			if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+			\
+			echo "$$STDOUT" | diff -q - message_29.txt > /dev/null 2>&1; \
+			EXIT_VAL=$$?; \
+			printf "$@ item 2: "; \
+			if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+			rm -f file_5gb_1.bin; \
+			rm -f file_5gb_2.bin; \
+			printf "\n"; \
+		else \
+			printf "$(YELLOW)Skipped$(RESET): file system '$$FS_TYPE' may not support sparse files.\n"; \
 		fi; \
 	)

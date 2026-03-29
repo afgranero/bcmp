@@ -107,8 +107,9 @@ off_t parse_num(const char *str) {
 
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wconversion"
-    return (off_t)val;;
+    off_t result = (off_t)val;
     #pragma GCC diagnostic pop
+    return result;
 }
 
 FILE* safe_fopen(char *filename) {
@@ -239,7 +240,7 @@ int main(int argc, char *argv[]) {
         }
 
         // If both files ended at the exact same time
-        if (diff_count == 0) {
+        if (n1 < BUFFER_SIZE && diff_count == 0) {
             if (!quiet) {
                 fprintf(stdout, "Files are equal.\n");                               
             }
