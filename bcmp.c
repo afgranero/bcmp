@@ -101,7 +101,7 @@ off_t parse_num(const char *str) {
     // in some legacy 32-bit systems sizeof(OFF_T_MAX) < sizeof(unsigned long long)
     if (val > OFF_T_MAX) {
         fprintf(stderr, "Error: '%s' overflows internal representation for counters.\n", str);
-        exit(1);
+        exit(2);
     }
 
     #pragma GCC diagnostic push

@@ -79,6 +79,8 @@ ALL_TESTS = test_01 \
 			test_73 \
 			test_74 \
 			test_75 \
+			test_76 \
+			test_77 \
 			summary
 
 RED   = \033[31m
@@ -1532,6 +1534,42 @@ test_75:
 			# necessary to count the two itens skipped \
 			printf "Skipped\nSkipped\n" >> $(LOG); \
 		fi; \
+	)
+
+test_76:
+	@# test if "../bcmp -n0x8000000000000000 file_01.bin file_03.bin" returns 2 and message in stderr,
+	@# passing a parameter that overflows off_t used internally
+
+	@(\
+		CMD="$(TARGET) -n0x8000000000000000 file_01.bin file_03.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDERR" | diff -q - message_34.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_77:
+	@# test if "../bcmp -n0x10000000000000000 file_01.bin file_03.bin" returns 2 and message in stderr,
+	@# passing a parameter that overflows unsigned long long for parameters
+
+	@(\
+		CMD="$(TARGET) -n0x10000000000000000 file_01.bin file_03.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDERR" | diff -q - message_35.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
 	)
 
 summary:
