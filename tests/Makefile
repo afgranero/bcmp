@@ -1495,6 +1495,7 @@ test_74:
 			printf "\n"; \
 		else \
 			printf "$(YELLOW)Skipped$(RESET): file system '$$FS_TYPE' may not support sparse files.\n"; \
+			printf "Skipped\nSkipped\n" >> $(LOG); \
 		fi; \
 	)
 
