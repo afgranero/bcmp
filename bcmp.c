@@ -80,7 +80,6 @@ off_t parse_num(const char *str) {
     // Skip leading whitespace manually
     while (*str == ' ' || *str == '\t') str++;
 
-
     // strtoull returns unsigned long long but receiving a negative number returns a two's complement negation ...
     // .. so check if the first character is a minus sign.
     if (*str == '-') {
@@ -99,7 +98,7 @@ off_t parse_num(const char *str) {
         exit(2);
     }
 
-    // in some legaxy 32-bit systems sizeof(OFF_T_MAX) < sizeof(unsigned long long)
+    // in some legacy 32-bit systems sizeof(OFF_T_MAX) < sizeof(unsigned long long)
     if (val > OFF_T_MAX) {
         fprintf(stderr, "Error: '%s' overflows internal representation for counters.\n", str);
         exit(1);
@@ -121,7 +120,7 @@ FILE* safe_fopen(char *filename) {
     return f;
 }
 
-void safe_fseek(char *filename, FILE *f, off_t skip) {
+off_t get_size(char *filename, FILE *f) {
     if (fseeko(f, 0, SEEK_END) != 0) {
         fprintf(stderr, "Error: could not skip to end of file '%s': %s.\n", filename, strerror(errno));
     }
@@ -132,8 +131,31 @@ void safe_fseek(char *filename, FILE *f, off_t skip) {
         exit(2);
     }
 
-    if (skip > size) {
-        fprintf(stderr, "Error: Skip '%llu' is larger than size '%lld' of file '%s'.\n", (long long)skip, (long long)size, filename);
+    // reposition the pointer
+    if (fseeko(f, 0, SEEK_SET) != 0) {
+        fprintf(stderr, "Error: could not skip to beginning of the file '%s': %s.\n", filename, strerror(errno));
+        fclose(f);
+        exit(2);
+    }
+
+    return size;
+}
+
+void safe_fseek(char *filename, FILE *f, off_t skip, off_t* size) {
+    // if (fseeko(f, 0, SEEK_END) != 0) {
+    //     fprintf(stderr, "Error: could not skip to end of file '%s': %s.\n", filename, strerror(errno));
+    // }
+
+    // *size = ftello(f);
+    // if (*size == -1) {
+    //     fprintf(stderr, "Error: could not read size of file '%s': %s", filename, strerror(errno));
+    //     exit(2);
+    // }
+
+    *size = get_size(filename, f);
+
+    if (skip > *size) {
+        fprintf(stderr, "Error: Skip '%llu' is larger than size '%lld' of file '%s'.\n", (long long)skip, (long long)*size, filename);
         exit(2);
     }
 
@@ -144,16 +166,22 @@ void safe_fseek(char *filename, FILE *f, off_t skip) {
     }    
 }
 
-// not used yet
-// int get_blocks(unsigned long size) {
-//     int blocks = 0;
-//     long temp = (size - 1);
-//     do {
-//         temp >>= 16;
-//         blocks++;
-//     } while (temp > 0);
-//     blocks = (blocks + 1) & ~1;
-// }
+int get_blocks(off_t size) {
+    // returns the number blocks of 4 bytes neded for the address
+    int blocks = 0;
+    off_t temp = (size - 1);
+    do {
+        temp >>= 16;
+        blocks += 1;
+    } while (temp > 0);
+    return blocks;
+}
+
+int get_address_format(off_t size1, off_t size2) {
+    size_t min_size = (size1 < size2) ? size1 : size2;
+    int blocks = 4 * get_blocks(min_size);
+    return blocks;
+}
 
 int main(int argc, char *argv[]) {
     int opt;
@@ -195,10 +223,18 @@ int main(int argc, char *argv[]) {
     FILE *f1 = safe_fopen(argv[optind]);
     FILE *f2 = safe_fopen(argv[optind + 1]);
 
+    off_t size1;
+    off_t size2;
+
     if (skip > 0) {
-        safe_fseek(argv[optind], f1, skip);
-        safe_fseek(argv[optind + 1], f2, skip);
+        safe_fseek(argv[optind], f1, skip, &size1);
+        safe_fseek(argv[optind + 1], f2, skip, &size2);
+    } else {
+        size1 = get_size(argv[optind], f1);
+        size2 = get_size(argv[optind + 1], f2);
     }
+
+    int address_format = get_address_format(size1, size2);
     offset = skip;
 
     // Buffers for file reading
@@ -217,7 +253,7 @@ int main(int argc, char *argv[]) {
 
                 for (size_t i = 0; i < min_n; i++) {
                     if (buf1[i] != buf2[i]) {
-                        printf("0x%08lx: 0x%02x != 0x%02x\n", offset + i, buf1[i], buf2[i]);
+                        printf("0x%0*llx: 0x%02x != 0x%02x\n", address_format, (long long)offset + i, buf1[i], buf2[i]);
                         diff_count++;
                         if (limit > 0 && diff_count >= limit) {
                             if (!quiet) {
