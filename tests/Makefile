@@ -1495,6 +1495,7 @@ test_74:
 			printf "\n"; \
 		else \
 			printf "$(YELLOW)Skipped$(RESET): file system '$$FS_TYPE' may not support sparse files.\n"; \
+			# necessary to count the two itens skipped \
 			printf "Skipped\nSkipped\n" >> $(LOG); \
 		fi; \
 	)
@@ -1528,6 +1529,7 @@ test_75:
 			printf "\n"; \
 		else \
 			printf "$(YELLOW)Skipped$(RESET): file system '$$FS_TYPE' may not support sparse files.\n"; \
+			# necessary to count the two itens skipped \
 			printf "Skipped\nSkipped\n" >> $(LOG); \
 		fi; \
 	)
