@@ -91,7 +91,7 @@ compile:
 # version tests
 test_01:
 	@# test if "../bcmp --version" return 0 and version text in stdout
-	@(\
+	@(\ 
 		CMD="$(TARGET) --version"; \
 		STDOUT=$$($$CMD 2> /dev/null); \
 		EXIT_VAL=$$?; \
@@ -1474,9 +1474,9 @@ test_74:
 		FS_TYPE=$$(stat -f -c %T . 2>/dev/null || echo "unknown"); \
 		printf "$@ "; \
 		if [ "$$FS_TYPE" = "ext2/ext3" ] || [ "$$FS_TYPE" = "ext4" ] || [ "$$FS_TYPE" = "xfs" ] || [ "$$FS_TYPE" = "apfs" ]; then \
-			rm -f file_5gb.bin; \
-			truncate -s 5G file_5gb.bin; \
-			CMD="$(TARGET) --skip 4800000000 file_5gb.bin file_5gb.bin"; \
+			rm -f /tmp/file_5gb.bin; \
+			truncate -s 5G /tmp/file_5gb.bin; \
+			CMD="$(TARGET) --skip 4800000000 /tmp/file_5gb.bin /tmp/file_5gb.bin"; \
 			STDOUT=$$($$CMD >&1 2>/dev/null); \
 			EXIT_VAL=$$?; \
 			printf "item 1: "; \
@@ -1486,7 +1486,7 @@ test_74:
 			EXIT_VAL=$$?; \
 			printf "$@ item 2: "; \
 			if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
-			rm -f file_5gb.bin; \
+			rm -f /tmp/file_5gb.bin; \
 			printf "\n"; \
 		else \
 			printf "$(YELLOW)Skipped$(RESET): file system '$$FS_TYPE' may not support sparse files.\n"; \
@@ -1501,13 +1501,13 @@ test_75:
 		FS_TYPE=$$(stat -f -c %T . 2>/dev/null || echo "unknown"); \
 		printf "$@ "; \
 		if [ "$$FS_TYPE" = "ext2/ext3" ] || [ "$$FS_TYPE" = "ext4" ] || [ "$$FS_TYPE" = "xfs" ] || [ "$$FS_TYPE" = "apfs" ]; then \
-			rm -f file_5gb_1.bin; \
-			rm -f file_5gb_2.bin; \
-			truncate -s 5G file_5gb_1.bin; \
-			printf '\xC\xB\xA' >> file_5gb_1.bin; \
-			truncate -s 5G file_5gb_2.bin; \
-			printf '\xA\xB\xC' >> file_5gb_2.bin; \
-			CMD="$(TARGET) --skip 4800000000 file_5gb_1.bin file_5gb_2.bin"; \
+			rm -f /tmp/file_5gb_1.bin; \
+			rm -f /tmp/file_5gb_2.bin; \
+			truncate -s 5G /tmp/file_5gb_1.bin; \
+			printf '\xC\xB\xA' >> /tmp/file_5gb_1.bin; \
+			truncate -s 5G /tmp/file_5gb_2.bin; \
+			printf '\xA\xB\xC' >> /tmp/file_5gb_2.bin; \
+			CMD="$(TARGET) --skip 4800000000 /tmp/file_5gb_1.bin /tmp/file_5gb_2.bin"; \
 			STDOUT=$$($$CMD >&1 2>/dev/null); \
 			EXIT_VAL=$$?; \
 			printf "item 1: "; \
@@ -1517,8 +1517,8 @@ test_75:
 			EXIT_VAL=$$?; \
 			printf "$@ item 2: "; \
 			if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
-			rm -f file_5gb_1.bin; \
-			rm -f file_5gb_2.bin; \
+			rm -f /tmp/file_5gb_1.bin; \
+			rm -f /tmp/file_5gb_2.bin; \
 			printf "\n"; \
 		else \
 			printf "$(YELLOW)Skipped$(RESET): file system '$$FS_TYPE' may not support sparse files.\n"; \
