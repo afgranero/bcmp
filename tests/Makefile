@@ -2,6 +2,8 @@ SHELL=/bin/bash
 
 TARGET = ../bcmp
 
+LOG=result.txt
+
 ALL_TESTS = test_01 \
 			test_02 \
 			test_03 \
@@ -76,7 +78,8 @@ ALL_TESTS = test_01 \
 			test_72 \
 			test_73 \
 			test_74 \
-			test_75
+			test_75 \
+			summary
 
 RED   = \033[31m
 YELLOW = \033[33m
@@ -87,22 +90,24 @@ tests: compile $(ALL_TESTS)
 
 compile:
 	@$(MAKE) -C .. --no-print-directory; printf "\n";
+	@rm -f $(LOG)
+	@touch $(LOG)
 
 # version tests
 test_01:
 	@# test if "../bcmp --version" return 0 and version text in stdout
-	@(\ 
+	@(\
 		CMD="$(TARGET) --version"; \
 		STDOUT=$$($$CMD 2> /dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# ignore vaiable parts of the output message \
 		echo "$$STDOUT" | ( head -c 9; tail -c +3; ) | ( head -c 306; tail -c +8) | diff -q - message_version.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -114,13 +119,13 @@ test_02:
 		STDOUT=$$($$CMD 2> /dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# ignore vaiable parts of the output message \
 		echo "$$STDOUT" | ( head -c 9; tail -c +3; ) | ( head -c 306; tail -c +8) | diff -q - message_version.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -133,12 +138,12 @@ test_03:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_help.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -150,12 +155,12 @@ test_04:
 		STDOUT=$$($$CMD 2> /dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_help.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -167,12 +172,12 @@ test_05:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_help.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -185,12 +190,12 @@ test_06:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_help.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -203,12 +208,12 @@ test_07:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_01.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -220,12 +225,12 @@ test_08:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_01.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -238,12 +243,12 @@ test_09:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_01.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -256,12 +261,12 @@ test_10:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_01.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -274,10 +279,10 @@ test_11:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		printf "$@ item 2: "; \
-		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -290,12 +295,12 @@ test_12:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_02.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -308,18 +313,18 @@ test_13:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_09.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_09.txt has 2 lines and so all differences are shown (this will matter in next test)... \
 		# ... this is easier than check STDOUT number of lines beleive me \
 		LINES_COUNT=$$(cat message_09.txt | wc -l); \
 		printf "$@ item 3: "; \
-		if [ $$LINES_COUNT -eq "2" ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$LINES_COUNT -eq "2" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -332,10 +337,10 @@ test_14:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		printf "$@ item 2: "; \
-		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -350,18 +355,18 @@ test_15:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_09.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_09.txt has 2 lines and so all differences are still shown (like in previous test) ... \
 		# ... this is easier than check STDOUT number of lines beleive me \
 		LINES_COUNT=$$(cat message_09.txt | wc -l); \
 		printf "$@ item 3: "; \
-		if [ $$LINES_COUNT -eq "2" ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$LINES_COUNT -eq "2" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -375,18 +380,18 @@ test_16:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_10.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_10.txt has 1 line and so one difference less is shown) ... \
 		# ... this is easier than check STDOUT number of lines beleive me \
 		LINES_COUNT=$$(cat message_10.txt | wc -l); \
 		printf "$@ item 3: "; \
-		if [ $$LINES_COUNT -eq "1" ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$LINES_COUNT -eq "1" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -401,18 +406,18 @@ test_17:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_10.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_10.txt has 1 line and so one difference less is shown) ... \
 		# ... this is easier than check STDOUT number of lines beleive me \
 		LINES_COUNT=$$(cat message_10.txt | wc -l); \
 		printf "$@ item 3: "; \
-		if [ $$LINES_COUNT -eq "1" ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$LINES_COUNT -eq "1" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -426,12 +431,12 @@ test_18:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_01.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)	
 
@@ -445,18 +450,18 @@ test_19:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_03.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_03.txt has 101 lines and so the limit is correct (100 outputs and one message) ... \
 		# ... this is easier than check STDOUT number of lines beleive me \
 		LINES_COUNT=$$(cat message_03.txt | wc -l); \
 		printf "$@ item 3: "; \
-		if [ $$LINES_COUNT -eq "101" ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$LINES_COUNT -eq "101" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -469,18 +474,18 @@ test_20:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_04.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_04.txt has 11 lines and so the limit is correct (100 outputs and one message) ... \
 		# ... this is easier than check STDOUT number of lines beleive me \
 		LINES_COUNT=$$(cat message_04.txt | wc -l); \
 		printf "$@ item 3: "; \
-		if [ $$LINES_COUNT -eq "11" ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$LINES_COUNT -eq "11" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -493,18 +498,18 @@ test_21:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_07.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_07.txt has 4075 lines and so the limit is correct (100 outputs and one message) ... \
 		# ... this is easier than check STDOUT number of lines beleive me \
 		LINES_COUNT=$$(cat message_07.txt | wc -l); \
 		printf "$@ item 3: "; \
-		if [ $$LINES_COUNT -eq "4075" ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$LINES_COUNT -eq "4075" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -519,10 +524,10 @@ test_22:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		printf "$@ item 2: "; \
-		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -536,10 +541,10 @@ test_23:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		printf "$@ item 2: "; \
-		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -553,10 +558,10 @@ test_24:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		printf "$@ item 2: "; \
-		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -570,18 +575,18 @@ test_25:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_05.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_05.txt has 2 lines and so the limit is correct (100 outputs and one message) ... \
 		# ... this is easier than check STDOUT number of lines beleive me \
 		LINES_COUNT=$$(cat message_05.txt | wc -l); \
 		printf "$@ item 3: "; \
-		if [ $$LINES_COUNT -eq "2" ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$LINES_COUNT -eq "2" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -596,18 +601,18 @@ test_26:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_08.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_08.txt has 1 line and so the limit is correct (100 outputs and one message) ... \
 		# ... this is easier than check STDOUT number of lines beleive me \
 		LINES_COUNT=$$(cat message_08.txt | wc -l); \
 		printf "$@ item 3: "; \
-		if [ $$LINES_COUNT -eq "1" ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$LINES_COUNT -eq "1" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -622,18 +627,18 @@ test_27:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_06.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_06.txt has 1 line and so the limit is correct (100 outputs and one message) ... \
 		# ... this is easier than check STDOUT number of lines beleive me \
 		LINES_COUNT=$$(cat message_06.txt | wc -l); \
 		printf "$@ item 3: "; \
-		if [ $$LINES_COUNT -eq "1" ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$LINES_COUNT -eq "1" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -649,10 +654,10 @@ test_28:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		printf "$@ item 2: "; \
-		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -667,10 +672,10 @@ test_29:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		printf "$@ item 2: "; \
-		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -686,12 +691,12 @@ test_30:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_11.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -704,12 +709,12 @@ test_31:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_11.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -721,12 +726,12 @@ test_32:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_11.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -742,12 +747,12 @@ test_33:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_12.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		rm -f /tmp/file_09.bin; \
 		printf "\n"; \
 	)
@@ -764,12 +769,12 @@ test_34:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_12.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		rm -f /tmp/file_09.bin; \
 		printf "\n"; \
 	)
@@ -786,12 +791,12 @@ test_35:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_12.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		rm -f /tmp/file_09.bin; \
 		printf "\n"; \
 	)
@@ -804,12 +809,12 @@ test_36:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_13.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -821,12 +826,12 @@ test_37:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_13.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -838,12 +843,12 @@ test_38:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_13.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -856,12 +861,12 @@ test_39:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_14.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -873,12 +878,12 @@ test_40:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_14.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -890,12 +895,12 @@ test_41:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_15.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -907,12 +912,12 @@ test_42:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_15.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -925,12 +930,12 @@ test_43:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_14.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -942,12 +947,12 @@ test_44:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_15.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -959,12 +964,12 @@ test_45:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_14.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -976,12 +981,12 @@ test_46:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_14.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -993,12 +998,12 @@ test_47:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_15.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1010,12 +1015,12 @@ test_48:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_15.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1027,12 +1032,12 @@ test_49:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_14.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1044,12 +1049,12 @@ test_50:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_15.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1065,12 +1070,12 @@ test_51:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_16.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1083,12 +1088,12 @@ test_52:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_17.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1100,12 +1105,12 @@ test_53:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_18.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1118,12 +1123,12 @@ test_54:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_19.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1136,12 +1141,12 @@ test_55:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_20.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1153,12 +1158,12 @@ test_56:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_18.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1170,12 +1175,12 @@ test_57:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_21.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1187,12 +1192,12 @@ test_58:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_22.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1204,12 +1209,12 @@ test_59:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_23.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1221,12 +1226,12 @@ test_60:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_24.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1239,13 +1244,13 @@ test_61:
 		STDOUT=$$($$CMD 2> /dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# ignore vaiable parts of the output message \
 		echo "$$STDOUT" | ( head -c 9; tail -c +3; ) | ( head -c 306; tail -c +8) | diff -q - message_version.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1257,13 +1262,13 @@ test_62:
 		STDOUT=$$($$CMD 2> /dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# ignore vaiable parts of the output message \
 		echo "$$STDOUT" | ( head -c 9; tail -c +3; ) | ( head -c 306; tail -c +8) | diff -q - message_version.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1275,12 +1280,12 @@ test_63:
 		STDOUT=$$($$CMD 2> /dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_help.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1292,12 +1297,12 @@ test_64:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_25.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1309,12 +1314,12 @@ test_65:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_26.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1326,12 +1331,12 @@ test_66:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_27.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1343,12 +1348,12 @@ test_67:
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_28.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1363,12 +1368,12 @@ test_68:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_01.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1381,12 +1386,12 @@ test_69:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_30.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1399,12 +1404,12 @@ test_70:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_31.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1418,12 +1423,12 @@ test_71:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_01.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1437,12 +1442,12 @@ test_72:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_32.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1456,12 +1461,12 @@ test_73:
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDOUT" | diff -q - message_33.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
-		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1480,12 +1485,12 @@ test_74:
 			STDOUT=$$($$CMD >&1 2>/dev/null); \
 			EXIT_VAL=$$?; \
 			printf "item 1: "; \
-			if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+			if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 			\
 			echo "$$STDOUT" | diff -q - message_01.txt > /dev/null 2>&1; \
 			EXIT_VAL=$$?; \
 			printf "$@ item 2: "; \
-			if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+			if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 			rm -f /tmp/file_5gb.bin; \
 			printf "\n"; \
 		else \
@@ -1511,16 +1516,32 @@ test_75:
 			STDOUT=$$($$CMD >&1 2>/dev/null); \
 			EXIT_VAL=$$?; \
 			printf "item 1: "; \
-			if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+			if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 			\
 			echo "$$STDOUT" | diff -q - message_29.txt > /dev/null 2>&1; \
 			EXIT_VAL=$$?; \
 			printf "$@ item 2: "; \
-			if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n"; else printf "$(RED)Fail$(RESET).\n"; fi; \
+			if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 			rm -f /tmp/file_5gb_1.bin; \
 			rm -f /tmp/file_5gb_2.bin; \
 			printf "\n"; \
 		else \
 			printf "$(YELLOW)Skipped$(RESET): file system '$$FS_TYPE' may not support sparse files.\n"; \
+			printf "Skipped\nSkipped\n" >> $(LOG); \
 		fi; \
+	)
+
+summary:
+	@(\
+		TOTAL=$$(cat $(LOG) | wc -l ); \
+		PASSED=$$(cat $(LOG) | grep Pass | wc -l); \
+		FAILS=$$(cat $(LOG) | grep Fail | wc -l); \
+		SKIPS=$$(cat $(LOG) | grep Skipped | wc -l); \
+		\
+		printf "\n"; \
+		printf "Results\n\n"; \
+		printf "Total tests: $$TOTAL\n"; \
+		printf "Passed: $$PASSED\n"; \
+		printf "Failed: $$FAILS\n"; \
+		printf "Skipped: $$SKIPS\n"; \
 	)
