@@ -1595,7 +1595,7 @@ test_78:
 test_79:
 	@# test if "../bcmp -n0xFFFFFFFFFFFFFFFF file_01.bin file_03.bin" returns 1 and message in stdout,
 	@# passing maximum value possible for a parameter
-	@# but this value overflows off_t used internally giving the correspondedn error 
+	@# but this value overflows off_t used internally giving the correspondent error 
 	@(\
 		CMD="$(TARGET) -n0xFFFFFFFFFFFFFFFF file_01.bin file_03.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
