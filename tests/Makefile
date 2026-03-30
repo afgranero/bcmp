@@ -81,6 +81,8 @@ ALL_TESTS = test_01 \
 			test_75 \
 			test_76 \
 			test_77 \
+			test_78 \
+			test_79 \
 			summary
 
 RED   = \033[31m
@@ -1566,6 +1568,42 @@ test_77:
 		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_35.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_78:
+	@# test if "../bcmp -n0x7FFFFFFFFFFFFFFF file_01.bin file_03.bin" returns 1 and message in stdout,
+	@# passing maximum value possible for off_t used internally
+	@
+	@(\
+		CMD="$(TARGET) -n0x7FFFFFFFFFFFFFFF file_01.bin file_03.bin"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_02.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_79:
+	@# test if "../bcmp -n0xFFFFFFFFFFFFFFFF file_01.bin file_03.bin" returns 1 and message in stdout,
+	@# passing maximum value possible for a parameter
+	@# but this value overflows off_t used internally giving the correspondedn error 
+	@(\
+		CMD="$(TARGET) -n0xFFFFFFFFFFFFFFFF file_01.bin file_03.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDERR" | diff -q - message_36.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
