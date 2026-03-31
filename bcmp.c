@@ -182,10 +182,38 @@ int get_blocks(off_t size) {
     return blocks;
 }
 
-int get_address_format(off_t size1, off_t size2) {
-    size_t min_size = (size1 < size2) ? size1 : size2;
+int get_address_blocks(off_t size1, off_t size2) {
+    off_t min_size = (size1 < size2) ? size1 : size2;
     int blocks = 4 * get_blocks(min_size);
     return blocks;
+}
+
+void get_address_formatted(char* out, off_t address_dec, off_t size1,  off_t size2) {
+    int address_chars = get_address_blocks(size1, size2);
+
+    char address[17];
+    int i = sprintf(address, "0x%0*llx", address_chars, (long long)address_dec);
+    address[i] = '\0';
+
+    // receives 0x0FFFFFFFFFFFFFFFF
+    // returns 0x0FFF FFFF FFFFF FFFF
+
+    int ia = 0;
+    int io = 0;
+
+    // copy 0x
+    io += sprintf(out, "%.2s", address);
+    ia += 2;
+
+    while (address[ia] != '\0') {
+        io += sprintf(out + io, "%.4s", address + ia);
+        ia += 4;
+        //add space if there are chars remaining
+        if (address[ia] != '\0') {
+            out[io++] = ' ';
+        }
+    }
+    out[io] = '\0';
 }
 
 int main(int argc, char *argv[]) {
@@ -239,9 +267,10 @@ int main(int argc, char *argv[]) {
         size2 = get_size(argv[optind + 1], f2);
     }
 
-    int address_format = get_address_format(size1, size2);
+    // int address_chars = get_address_blocks(size1, size2);
+    char address[22];
     offset = skip;
-
+    
     // Buffers for file reading
     unsigned char buf1[BUFFER_SIZE];
     unsigned char buf2[BUFFER_SIZE];
@@ -258,7 +287,9 @@ int main(int argc, char *argv[]) {
 
                 for (size_t i = 0; i < min_n; i++) {
                     if (buf1[i] != buf2[i]) {
-                        printf("0x%0*llx: 0x%02x != 0x%02x\n", address_format, (long long)offset + i, buf1[i], buf2[i]);
+                        get_address_formatted(address, offset + i, size1, size2);
+                        // printf("0x%0*llx: 0x%02x != 0x%02x\n", address_chars, (long long)offset + i, buf1[i], buf2[i]);
+                        printf("%s: 0x%02x != 0x%02x\n", address, buf1[i], buf2[i]);
                         diff_count++;
                         if (limit > 0 && diff_count >= limit) {
                             if (!quiet) {
