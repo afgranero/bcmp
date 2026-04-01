@@ -192,7 +192,7 @@ void get_address_formatted(char* out, off_t address_dec, off_t size1,  off_t siz
     int address_chars = get_address_chars(size1, size2);
 
     char address[17];
-    int i = sprintf(address, "0x%0*llx", address_chars, (long long)address_dec);
+    int i = sprintf(address, "%0*llx", address_chars, (long long)address_dec);
     address[i] = '\0';
 
     // receives 0x0FFFFFFFFFFFFFFFF
@@ -200,10 +200,6 @@ void get_address_formatted(char* out, off_t address_dec, off_t size1,  off_t siz
 
     int ia = 0;
     int io = 0;
-
-    // copy 0x
-    io += sprintf(out, "%.2s", address);
-    ia += 2;
 
     while (address[ia] != '\0') {
         io += sprintf(out + io, "%.4s", address + ia);
@@ -235,7 +231,6 @@ int main(int argc, char *argv[]) {
         {0, 0, 0, 0} // Array must be null-terminated
     };
 
-    // getopt_long instead of getopt
     // the last argument (&option_index) can be NULL if you don't need the index
     while ((opt = getopt_long(argc, argv, "qn:s:vh", long_options, NULL)) != -1) {
         switch (opt) {
@@ -287,7 +282,7 @@ int main(int argc, char *argv[]) {
                 for (size_t i = 0; i < min_n; i++) {
                     if (buf1[i] != buf2[i]) {
                         get_address_formatted(address, offset + i, size1, size2);
-                        printf("%s: 0x%02x != 0x%02x\n", address, buf1[i], buf2[i]);
+                        printf("%s: %02x %02x\n", address, buf1[i], buf2[i]);
                         diff_count++;
                         if (limit > 0 && diff_count >= limit) {
                             if (!quiet) {
@@ -303,7 +298,7 @@ int main(int argc, char *argv[]) {
 
         if (n1 != n2) {
             if (!quiet) {
-                printf("0x%08lx: EOF on %s\n", offset + min_n, (n1 < n2) ? argv[optind] : argv[optind + 1]);
+                printf("%08lx: EOF on %s\n", offset + min_n, (n1 < n2) ? argv[optind] : argv[optind + 1]);
             }
             result = 1;
             break;

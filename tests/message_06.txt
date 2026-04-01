@@ -1,1 +1,1 @@
-0x00001000: EOF on file_01.bin
+00001000: EOF on file_01.bin
