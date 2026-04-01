@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 
-# := sets immediat;e avoiding to resexpand it everytime is referred
+# := sets immediatly avoiding to resexpand it everytime it is referred
 TMPDIR := $(or $(TMPDIR),/tmp)
 
 TARGET = ../bcmp
