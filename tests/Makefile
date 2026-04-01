@@ -1,5 +1,8 @@
 SHELL=/bin/bash
 
+# := sets immediat;e avoiding to resexpand it everytime is referred
+TMPDIR := $(or $(TMPDIR),/tmp)
+
 TARGET = ../bcmp
 
 LOG=result.txt
@@ -740,14 +743,14 @@ test_32:
 	)
 
 test_33:
-	@# test if "../bcmp /tmp/file_09.bin file_01.bin" returns 2 and error message in stderr,
+	@# test if "../bcmp $(TMPDIR)/file_09.bin file_01.bin" returns 2 and error message in stderr,
 	@# first argument with file without read permission
-	@# using /tmp because some deamons like Dropbox restore removed read permissions
+	@# using $(TMPDIR) because some deamons like Dropbox restore removed read permissions
 	@(\
-		rm -f /tmp/file_09.bin; \
-		cp file_09.bin /tmp; \
-		chmod 224 /tmp/file_09.bin; \
-		CMD="$(TARGET) /tmp/file_09.bin file_01.bin"; \
+		rm -f $(TMPDIR)/file_09.bin; \
+		cp file_09.bin $(TMPDIR); \
+		chmod 224 $(TMPDIR)/file_09.bin; \
+		CMD="$(TARGET) $(TMPDIR)/file_09.bin file_01.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
@@ -757,19 +760,19 @@ test_33:
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
-		rm -f /tmp/file_09.bin; \
+		rm -f $(TMPDIR)/file_09.bin; \
 		printf "\n"; \
 	)
 
 test_34:
-	@# test if "../bcmp file_01.bin /tmp/file_09.bin" returns 2 and error message in stderr,
+	@# test if "../bcmp file_01.bin $(TMPDIR)/file_09.bin" returns 2 and error message in stderr,
 	@# second argument with file without read permission
-	@# using /tmp because some deamons like Dropbox restore removed read permissions
+	@# using $(TMPDIR) because some deamons like Dropbox restore removed read permissions
 	@(\
-		rm -f /tmp/file_09.bin; \
-		cp file_09.bin /tmp; \
-		chmod 224 /tmp/file_09.bin; \
-		CMD="$(TARGET) file_01.bin /tmp/file_09.bin"; \
+		rm -f $(TMPDIR)/file_09.bin; \
+		cp file_09.bin $(TMPDIR); \
+		chmod 224 $(TMPDIR)/file_09.bin; \
+		CMD="$(TARGET) file_01.bin $(TMPDIR)/file_09.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
@@ -779,19 +782,19 @@ test_34:
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
-		rm -f /tmp/file_09.bin; \
+		rm -f $(TMPDIR)/file_09.bin; \
 		printf "\n"; \
 	)
 
 test_35:
-	@# test if "../bcmp /tmp/file_09.bin /tmp/file_09.bin" returns 2 and error message in stderr,
+	@# test if "../bcmp $(TMPDIR)/file_09.bin $(TMPDIR)/file_09.bin" returns 2 and error message in stderr,
 	@# both arguments with files without read permission
-	@# using /tmp because some deamons like Dropbox restore removed read permissions
+	@# using $(TMPDIR) because some deamons like Dropbox restore removed read permissions
 	@(\
-		rm -f /tmp/file_09.bin; \
-		cp file_09.bin /tmp; \
-		chmod 224 /tmp/file_09.bin; \
-		CMD="$(TARGET) /tmp/file_09.bin /tmp/file_09.bin"; \
+		rm -f $(TMPDIR)/file_09.bin; \
+		cp file_09.bin $(TMPDIR); \
+		chmod 224 $(TMPDIR)/file_09.bin; \
+		CMD="$(TARGET) $(TMPDIR)/file_09.bin $(TMPDIR)/file_09.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
 		EXIT_VAL=$$?; \
 		printf "$@ item 1: "; \
@@ -801,7 +804,7 @@ test_35:
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
-		rm -f /tmp/file_09.bin; \
+		rm -f $(TMPDIR)/file_09.bin; \
 		printf "\n"; \
 	)
 
@@ -1483,9 +1486,9 @@ test_74:
 		FS_TYPE=$$(stat -f -c %T . 2>/dev/null || echo "unknown"); \
 		printf "$@ "; \
 		if [ "$$FS_TYPE" = "ext2/ext3" ] || [ "$$FS_TYPE" = "ext4" ] || [ "$$FS_TYPE" = "xfs" ] || [ "$$FS_TYPE" = "apfs" ]; then \
-			rm -f /tmp/file_5gb.bin; \
-			truncate -s 5G /tmp/file_5gb.bin; \
-			CMD="$(TARGET) --skip 4800000000 /tmp/file_5gb.bin /tmp/file_5gb.bin"; \
+			rm -f $(TMPDIR)/file_5gb.bin; \
+			truncate -s 5G $(TMPDIR)/file_5gb.bin; \
+			CMD="$(TARGET) --skip 4800000000 $(TMPDIR)/file_5gb.bin $(TMPDIR)/file_5gb.bin"; \
 			STDOUT=$$($$CMD >&1 2>/dev/null); \
 			EXIT_VAL=$$?; \
 			printf "item 1: "; \
@@ -1495,7 +1498,7 @@ test_74:
 			EXIT_VAL=$$?; \
 			printf "$@ item 2: "; \
 			if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
-			rm -f /tmp/file_5gb.bin; \
+			rm -f $(TMPDIR)/file_5gb.bin; \
 			printf "\n"; \
 		else \
 			printf "$(YELLOW)Skipped$(RESET): file system '$$FS_TYPE' may not support sparse files.\n"; \
@@ -1512,13 +1515,13 @@ test_75:
 		FS_TYPE=$$(stat -f -c %T . 2>/dev/null || echo "unknown"); \
 		printf "$@ "; \
 		if [ "$$FS_TYPE" = "ext2/ext3" ] || [ "$$FS_TYPE" = "ext4" ] || [ "$$FS_TYPE" = "xfs" ] || [ "$$FS_TYPE" = "apfs" ]; then \
-			rm -f /tmp/file_5gb_1.bin; \
-			rm -f /tmp/file_5gb_2.bin; \
-			truncate -s 5G /tmp/file_5gb_1.bin; \
-			printf '\xC\xB\xA' >> /tmp/file_5gb_1.bin; \
-			truncate -s 5G /tmp/file_5gb_2.bin; \
-			printf '\xA\xB\xC' >> /tmp/file_5gb_2.bin; \
-			CMD="$(TARGET) --skip 4800000000 /tmp/file_5gb_1.bin /tmp/file_5gb_2.bin"; \
+			rm -f $(TMPDIR)/file_5gb_1.bin; \
+			rm -f $(TMPDIR)/file_5gb_2.bin; \
+			truncate -s 5G $(TMPDIR)/file_5gb_1.bin; \
+			printf '\xC\xB\xA' >> $(TMPDIR)/file_5gb_1.bin; \
+			truncate -s 5G $(TMPDIR)/file_5gb_2.bin; \
+			printf '\xA\xB\xC' >> $(TMPDIR)/file_5gb_2.bin; \
+			CMD="$(TARGET) --skip 4800000000 $(TMPDIR)/file_5gb_1.bin $(TMPDIR)/file_5gb_2.bin"; \
 			STDOUT=$$($$CMD >&1 2>/dev/null); \
 			EXIT_VAL=$$?; \
 			printf "item 1: "; \
@@ -1528,8 +1531,8 @@ test_75:
 			EXIT_VAL=$$?; \
 			printf "$@ item 2: "; \
 			if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
-			rm -f /tmp/file_5gb_1.bin; \
-			rm -f /tmp/file_5gb_2.bin; \
+			rm -f $(TMPDIR)/file_5gb_1.bin; \
+			rm -f $(TMPDIR)/file_5gb_2.bin; \
 			printf "\n"; \
 		else \
 			printf "$(YELLOW)Skipped$(RESET): file system '$$FS_TYPE' may not support sparse files.\n"; \
