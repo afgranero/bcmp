@@ -1,2 +1,2 @@
 05ec: ea d9
-00001000: EOF on file_01.bin
+1000: EOF on file_01.bin

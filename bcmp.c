@@ -298,7 +298,8 @@ int main(int argc, char *argv[]) {
 
         if (n1 != n2) {
             if (!quiet) {
-                printf("%08lx: EOF on %s\n", offset + min_n, (n1 < n2) ? argv[optind] : argv[optind + 1]);
+                get_address_formatted(address, offset + min_n, size1, size2);
+                printf("%s: EOF on %s\n", address, (n1 < n2) ? argv[optind] : argv[optind + 1]);
             }
             result = 1;
             break;
