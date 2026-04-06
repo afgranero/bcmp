@@ -6,3 +6,6 @@ Options:
   -s, --skip N   skip first N bytes (supports hex 0x...)
   -h, --help     display this help and exit
   -v, --version  output version information and exit
+
+If file1 or file2 is '-' (but not both), read standard input.
+Exit status is 0 if inputs are the same, 1 if different, 2 if error.

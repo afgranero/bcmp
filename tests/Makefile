@@ -1,3 +1,10 @@
+# it will only work in Windows with MingGW32 and MSYS2
+ifeq ($(OS),Windows_NT)
+  ifndef MSYSTEM
+    $(error Use MSYS2 to build/test on Windows)
+  endif
+endif
+
 SHELL=/bin/bash
 
 # := sets immediatly avoiding to resexpand it everytime it is referred

@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 
 #if defined(_WIN32) || defined(_MSDOS)
     #if defined(_MSC_VER) || defined(__MINGW32__)
@@ -21,11 +22,18 @@
 #endif
 
 #include <stdlib.h>
-#include <limits.h>
+#include <string.h>
 #include <string.h>
 #include <errno.h>
+#include <limits.h>
 #include <getopt.h>
 
+
+
+#define EQUAL 0
+#define SUCCESS 0
+#define DIFFERENT 1
+#define ERROR 2
 #define BUFFER_SIZE 65536
 
 // On legacy 32-bit Intel architectures (i386 through early Pentium 4), ...
@@ -60,6 +68,9 @@ void print_help(FILE *out, char *prog) {
                     "  -s, --skip N   skip first N bytes (supports hex 0x...)\n"
                     "  -h, --help     display this help and exit\n"
                     "  -v, --version  output version information and exit\n"
+                    "\n"
+                    "If file1 or file2 is '-' (but not both), read standard input.\n"
+                    "Exit status is 0 if inputs are the same, 1 if different, 2 if error.\n"
             );
 }
 
@@ -84,18 +95,18 @@ off_t parse_num(const char *str) {
     // .. so check if the first character is a minus sign.
     if (*str == '-') {
         fprintf(stderr, "Error: Negative numbers are not allowed: '%s'\n", str);
-        exit(2);
+        exit(ERROR);
     }
 
     unsigned long long val = strtoull(str, &endptr, 0);
     if (str == endptr || *endptr != '\0') {
         fprintf(stderr, "Error: '%s' is not a valid number.\n", str);
-        exit(2);
+        exit(ERROR);
     }
 
     if (errno == ERANGE) {
         fprintf(stderr, "Error: '%s' overflows internal representation for parameters.\n", str);
-        exit(2);
+        exit(ERROR);
     }
 
     // On 64-bit systems, off_t is typically a signed long long (64-bit).
@@ -106,7 +117,7 @@ off_t parse_num(const char *str) {
     // We chose to maintain each system's native typing to ensure consistent behavior.
     if (val > OFF_T_MAX) {
         fprintf(stderr, "Error: '%s' overflows internal representation for counters.\n", str);
-        exit(2);
+        exit(ERROR);
     }
 
     #pragma GCC diagnostic push
@@ -120,7 +131,7 @@ FILE* safe_fopen(char *filename) {
     FILE *f = fopen(filename, "rb");
     if (!f) {
         fprintf(stderr, "Error opening file: '%s': %s.\n", filename, strerror(errno));
-        exit(2);
+        exit(ERROR);
     }
     return f;
 }
@@ -128,35 +139,26 @@ FILE* safe_fopen(char *filename) {
 off_t get_size(char *filename, FILE *f) {
     if (fseeko(f, 0, SEEK_END) != 0) {
         fprintf(stderr, "Error: could not skip to end of file '%s': %s.\n", filename, strerror(errno));
+        exit(ERROR);
     }
 
     off_t size = ftello(f);
     if (size == -1) {
-        fprintf(stderr, "Error: could not read size of file '%s': %s", filename, strerror(errno));
-        exit(2);
+        fprintf(stderr, "Error: could not read size of file '%s': %s\n", filename, strerror(errno));
+        exit(ERROR);
     }
 
     // reposition the pointer
     if (fseeko(f, 0, SEEK_SET) != 0) {
         fprintf(stderr, "Error: could not skip to beginning of the file '%s': %s.\n", filename, strerror(errno));
         fclose(f);
-        exit(2);
+        exit(ERROR);
     }
 
     return size;
 }
 
-void safe_fseek(char *filename, FILE *f, off_t skip, off_t* size) {
-    // if (fseeko(f, 0, SEEK_END) != 0) {
-    //     fprintf(stderr, "Error: could not skip to end of file '%s': %s.\n", filename, strerror(errno));
-    // }
-
-    // *size = ftello(f);
-    // if (*size == -1) {
-    //     fprintf(stderr, "Error: could not read size of file '%s': %s", filename, strerror(errno));
-    //     exit(2);
-    // }
-
+void safe_fseek(char *filename, FILE *f, off_t skip, off_t* size) { // TODO  <--- must I return  a value?
     *size = get_size(filename, f);
 
     if (skip > *size) {
@@ -167,8 +169,59 @@ void safe_fseek(char *filename, FILE *f, off_t skip, off_t* size) {
     if (fseeko(f, skip, SEEK_SET) != 0) {
         fprintf(stderr, "Error: could not skip to offset 0x%llx in file '%s': %s.\n", (long long)skip, filename, strerror(errno));
         fclose(f);
-        exit(2);
+        exit(ERROR);
     }    
+}
+
+int is_stream(char *filename, FILE* stream) {
+    struct stat st;
+    
+    if (fstat(fileno(stream), &st) != 0) {
+        fprintf(stderr, "Error: could not fstat: '%s': %s.", filename, strerror(errno));
+        exit(ERROR);
+    }
+    return !(S_ISREG(st.st_mode));
+}
+
+size_t safe_fread(unsigned char *buf, size_t size_element, size_t to_read, FILE *stream) {
+    size_t read_count = fread(buf, size_element, to_read, stream);
+    if (read_count < to_read) {
+        if (ferror(stream)) {
+            exit(ERROR);
+        }
+    }
+
+    return read_count;
+}
+
+void synthetic_fseek(char *filename, FILE *f, off_t skip) {
+    unsigned char junk[8192];
+    off_t remaining = skip;
+    while (remaining > 0) {
+        size_t to_read = (remaining > (off_t)sizeof(junk)) ? sizeof(junk) : (size_t)remaining;
+        size_t read_count = safe_fread(junk, 1, to_read, f);
+        remaining -= read_count;
+    }
+}
+
+void genereric_fseek(char *filename, FILE *f, off_t skip, off_t* size) {
+    if (is_stream(filename, f)) {
+        synthetic_fseek(filename, f, skip);
+        size = 0;
+    }
+    else {
+        safe_fseek(filename, f, skip, size);
+    }
+}
+
+off_t generic_get_size(char *filename, FILE *f) {
+    off_t size ;
+    if (is_stream(filename, f)) {
+        size = 0;
+    }
+    else {
+        size = get_size(filename, f);
+    }
 }
 
 int get_blocks(off_t size) {
@@ -219,7 +272,7 @@ int main(int argc, char *argv[]) {
     off_t skip = 0;
     off_t diff_count = 0;
     off_t offset;
-    int result = 0;
+    int result = SUCCESS;
 
     // long options mapping
     static struct option long_options[] = {
@@ -238,28 +291,36 @@ int main(int argc, char *argv[]) {
             case 'n': limit = parse_num(optarg); break;
             case 's': skip = parse_num(optarg); break;
             case 'v': print_version(); return 0;
-            case 'h': print_help(stdout, argv[0]); return 0;
-            default:  print_help(stderr, argv[0]); return 2;
+            case 'h': print_help(stdout, argv[0]); return SUCCESS;
+            default:  print_help(stderr, argv[0]); return ERROR;
         }
     }
 
     if (argc - optind != 2) {
         print_help(stderr, argv[0]);
-        return 2;
+        return ERROR;
     }
 
-    FILE *f1 = safe_fopen(argv[optind]);
-    FILE *f2 = safe_fopen(argv[optind + 1]);
+    char* filename1 = argv[optind];
+    char* filename2 = argv[optind + 1];
+    
+    if (strcmp(filename1, "-") == 0 && strcmp(filename2, "-") == 0 )  {
+         fprintf(stderr, "Only one file can be read from standard input.\n");
+         exit(ERROR);
+    }
 
+    FILE *f1 = (strcmp(filename1, "-") == 0) ? stdin : safe_fopen(filename1);
+    FILE *f2 = (strcmp(filename2, "-") == 0) ? stdin : safe_fopen(filename2);
+    
     off_t size1;
     off_t size2;
 
     if (skip > 0) {
-        safe_fseek(argv[optind], f1, skip, &size1);
-        safe_fseek(argv[optind + 1], f2, skip, &size2);
+        genereric_fseek(filename1, f1, skip, &size1);
+        genereric_fseek(filename2, f2, skip, &size2);
     } else {
-        size1 = get_size(argv[optind], f1);
-        size2 = get_size(argv[optind + 1], f2);
+        size1 = generic_get_size(filename1, f1);
+        size2 = generic_get_size(filename2, f2);
     }
 
     char address[22];
@@ -276,7 +337,7 @@ int main(int argc, char *argv[]) {
 
         if (min_n > 0) {
             if (memcmp(buf1, buf2, min_n) != 0) {
-                result = 1;
+                result = DIFFERENT;
                 if (quiet) break;
 
                 for (size_t i = 0; i < min_n; i++) {
@@ -299,9 +360,9 @@ int main(int argc, char *argv[]) {
         if (n1 != n2) {
             if (!quiet) {
                 get_address_formatted(address, offset + min_n, size1, size2);
-                printf("%s: EOF on %s\n", address, (n1 < n2) ? argv[optind] : argv[optind + 1]);
+                printf("%s: EOF on %s\n", address, (n1 < n2) ? filename1 : filename2);
             }
-            result = 1;
+            result = DIFFERENT;
             break;
         }
 
