@@ -158,12 +158,13 @@ off_t get_size(char *filename, FILE *f) {
     return size;
 }
 
-void safe_fseek(char *filename, FILE *f, off_t skip, off_t* size) { // TODO  <--- must I return  a value?
+void safe_fseek(char *filename, FILE *f, off_t skip, off_t* size) {
     *size = get_size(filename, f);
 
     if (skip > *size) {
         fprintf(stderr, "Error: Skip '%llu' is larger than size '%lld' of file '%s'.\n", (long long)skip, (long long)*size, filename);
-        exit(2);
+        fclose(f);
+        exit(ERROR);
     }
 
     if (fseeko(f, skip, SEEK_SET) != 0) {
@@ -201,6 +202,11 @@ void synthetic_fseek(char *filename, FILE *f, off_t skip) {
         size_t to_read = (remaining > (off_t)sizeof(junk)) ? sizeof(junk) : (size_t)remaining;
         size_t read_count = safe_fread(junk, 1, to_read, f);
         remaining -= read_count;
+        if (read_count == 0) {
+            // in this case the stream ended: so the skip value is bigger than the stream
+            fprintf(stderr, "Error: could not get 0x%llx bytes from stdin to skip.\n", (long long)skip);
+            exit(ERROR);
+        }
     }
 }
 
@@ -331,8 +337,8 @@ int main(int argc, char *argv[]) {
     unsigned char buf2[BUFFER_SIZE];
 
     while (1) {
-        size_t n1 = fread(buf1, 1, BUFFER_SIZE, f1);
-        size_t n2 = fread(buf2, 1, BUFFER_SIZE, f2);
+        size_t n1 = safe_fread(buf1, 1, BUFFER_SIZE, f1);
+        size_t n2 = safe_fread(buf2, 1, BUFFER_SIZE, f2);
         size_t min_n = (n1 < n2) ? n1 : n2;
 
         if (min_n > 0) {

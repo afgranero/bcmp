@@ -93,6 +93,16 @@ ALL_TESTS = test_01 \
 			test_77 \
 			test_78 \
 			test_79 \
+			test_80 \
+			test_81 \
+			test_82 \
+			test_83 \
+			test_84 \
+			test_85 \
+			test_86 \
+			test_87 \
+			test_88 \
+			test_89 \
 			summary
 
 RED   = \033[31m
@@ -1614,6 +1624,193 @@ test_79:
 		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		echo "$$STDERR" | diff -q - message_36.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+# tests receiving file from stdin
+test_80:
+	@# test if "cat file_01.bin | ../bcmp - file_02.bin" return 0 and message in stdout,
+	@# equal files
+	@# file is received from stdin on first parameter
+	@(\
+		CMD="$(TARGET) - file_02.bin"; \
+		STDOUT=$$(cat file_01.bin | $$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_01.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_81:
+	@# test if "cat file_02.bin | ../bcmp file_01.bin -" return 0 and message in stdout,
+	@# equal files
+	@# file is received from stdin on second parameter
+	@(\
+		CMD="$(TARGET) file_01.bin -"; \
+		STDOUT=$$(cat file_02.bin | $$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_01.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_82:
+	@# test if "cat file_01.bin | ../bcmp - file_03.bin" returns 1 and message in stdout,
+	@# files differ
+	@# file is received from stdin on first parameter
+	@(\
+		CMD="$(TARGET) - file_03.bin"; \
+		STDOUT=$$(cat file_01.bin | $$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_02.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_83:
+	@# test if "cat file_03.bin | ../bcmp file_01.bin -" returns 1 and message in stdout,
+	@# files differ
+	@# file is received from stdin on second parameter
+	@(\
+		CMD="$(TARGET) file_01.bin -"; \
+		STDOUT=$$(cat file_03.bin | $$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_02.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_84:
+	@# test if "cat file_01.bin | ../bcmp -s0x019A - file_03.bin" returns 1 and message in stdout,
+	@# files differ
+	@# file is received from stdin on first parameter
+	@# skips the first difference
+	@(\
+		CMD="$(TARGET) -s0x019A - file_03.bin"; \
+		STDOUT=$$(cat file_01.bin | $$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_37.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_85:
+	@# test if "cat file_03.bin | ../bcmp -s0x019A file_01.bin -" returns 1 and message in stdout,
+	@# files differ
+	@# file is received from stdin on second parameter
+	@# skips the first difference
+	@(\
+		CMD="$(TARGET) -s0x019A file_01.bin -"; \
+		STDOUT=$$(cat file_03.bin | $$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_37.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_86:
+	@# test if "cat file_01.bin | ../bcmp -s4097 - file_03.bin" returns 2 and error message in stderr,
+	@# files differ
+	@# file is received from stdin on first parameter
+	@# skips past the end of stream
+	@(\
+		CMD="$(TARGET) -s4097 - file_03.bin"; \
+		STDERR=$$(cat file_01.bin | $$CMD 2>&1 >/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDERR" | diff -q - message_38.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_87:
+	@# test if "cat file_03.bin | ../bcmp -s4097 file_01.bin -" returns 2 and message in stderr,
+	@# files differ
+	@# file is received from stdin on second parameter
+	@# skips past the end of file
+	@(\
+		CMD="$(TARGET) -s4097 file_01.bin -"; \
+		STDERR=$$(cat file_03.bin | $$CMD 2>&1 >/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDERR" | diff -q - message_39.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_88:
+	@# test if "head -c 4095 file_01.bin | ../bcmp -s4096 - file_03.bin" returns 2 and message in stderr,
+	@# files differ
+	@# file is received from stdin on second parameter
+	@# skips past the end of file
+	@(\
+		CMD="$(TARGET) -s4096 - file_03.bin"; \
+		STDERR=$$(head -c 4095 file_01.bin | $$CMD 2>&1 >/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDERR" | diff -q - message_40.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_89:
+	@# test if "head -c 4095 file_01.bin | ../bcmp -s4096 file_03.bin -" returns 2 and message in stderr,
+	@# files differ
+	@# file is received from stdin on second parameter
+	@# skips past the end of file
+	@(\
+		CMD="$(TARGET) -s4096 file_01.bin -"; \
+		STDERR=$$(head -c 4095 file_03.bin | $$CMD 2>&1 >/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDERR" | diff -q - message_40.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
