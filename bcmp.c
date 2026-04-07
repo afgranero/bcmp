@@ -28,8 +28,6 @@
 #include <limits.h>
 #include <getopt.h>
 
-
-
 #define EQUAL 0
 #define SUCCESS 0
 #define DIFFERENT 1
