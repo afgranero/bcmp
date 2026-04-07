@@ -198,14 +198,23 @@ size_t safe_fread(unsigned char *buf, size_t size_element, size_t to_read, FILE 
 void synthetic_fseek(char *filename, FILE *f, off_t skip) {
     unsigned char junk[8192];
     off_t remaining = skip;
+    off_t read = 0;
     while (remaining > 0) {
         size_t to_read = (remaining > (off_t)sizeof(junk)) ? sizeof(junk) : (size_t)remaining;
         size_t read_count = safe_fread(junk, 1, to_read, f);
         remaining -= read_count;
+        read += read_count;
         if (read_count == 0) {
-            // in this case the stream ended: so the skip value is bigger than the stream
-            fprintf(stderr, "Error: could not get 0x%llx bytes from stdin to skip.\n", (long long)skip);
-            exit(ERROR);
+            if (feof(f)) {
+                // in this case the stream ended: so the skip value is bigger than the stream
+                // is to an error as safe_ferror treats those
+                fprintf(stderr, "Error: could not skip '0x%llx' bytes from stdin. EOF found after 0x%llx bytes read.\n", (long long)skip, (long long)read);
+                exit(ERROR);
+            } else {
+                // neither error of end of file
+                fprintf(stderr, "Unexpected error: could not skip '0x%llx' bytes from stdin. Stream stopped after 0x%llx bytes read without reaching EOF.\n", (long long)skip, (long long)read);
+                exit(ERROR);
+            }
         }
     }
 }

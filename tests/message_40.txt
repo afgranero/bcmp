@@ -1,1 +1,1 @@
-Error: could not get 0x1000 bytes from stdin to skip.
+Error: could not skip '0x1000' bytes from stdin. EOF found after 0xfff bytes read.
