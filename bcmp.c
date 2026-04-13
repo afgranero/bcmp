@@ -217,7 +217,7 @@ void synthetic_fseek(char *filename, FILE *f, off_t skip) {
     }
 }
 
-void genereric_fseek(char *filename, FILE *f, off_t skip, off_t* size) {
+void generic_fseek(char *filename, FILE *f, off_t skip, off_t* size) {
     if (is_stream(filename, f)) {
         synthetic_fseek(filename, f, skip);
         size = 0;
@@ -329,8 +329,8 @@ int main(int argc, char *argv[]) {
     off_t size2;
 
     if (skip > 0) {
-        genereric_fseek(filename1, f1, skip, &size1);
-        genereric_fseek(filename2, f2, skip, &size2);
+        generic_fseek(filename1, f1, skip, &size1);
+        generic_fseek(filename2, f2, skip, &size2);
     } else {
         size1 = generic_get_size(filename1, f1);
         size2 = generic_get_size(filename2, f2);
