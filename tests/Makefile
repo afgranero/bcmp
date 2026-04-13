@@ -7,7 +7,7 @@ endif
 
 SHELL=/bin/bash
 
-# := sets immediatly avoiding to resexpand it everytime it is referred
+# := sets immediately avoiding to reexpand it every time it is referred
 TMPDIR := $(or $(TMPDIR),/tmp)
 
 TARGET = ../bcmp
@@ -372,7 +372,7 @@ test_14:
 test_15:
 	@# test if "../bcmp -s1 file_07.bin file_08.bin" return 1 and message in stdout,
 	@# files differ,
-	@# files with 0x00 in the begining,
+	@# files with 0x00 in the beginning,
 	@# skipping first byte that is equal in both, no change in output compared with no skip
 	@(\
 		CMD="$(TARGET) file_07.bin file_08.bin"; \
@@ -397,7 +397,7 @@ test_15:
 test_16:
 	@# test if "../bcmp -s2 file_07.bin file_08.bin" return 1 and message in stdout,
 	@# files differ,
-	@# files with 0x00 in the begining,
+	@# files with 0x00 in the beginning,
 	@# skipping two bytes, so output shows one difference less
 	@(\
 		CMD="$(TARGET) -s2 file_07.bin file_08.bin"; \
@@ -423,7 +423,7 @@ test_17:
 	@# test if "../bcmp --skip 2 file_07.bin file_08.bin" return 1 and message in stdout,
 	@# --skip is the same as -s,
 	@# files differ,
-	@# files with 0x00 in the begining,
+	@# files with 0x00 in the beginning,
 	@# skipping two first bytes, so output shows one difference less
 	@(\
 		CMD="$(TARGET) --skip 2 file_07.bin file_08.bin"; \
@@ -448,7 +448,7 @@ test_17:
 test_18:
 	@# test if "../bcmp -s3 file_07.bin file_08.bin" returns 1 and messages in stdout,
 	@# files differ,
-	@# files with 0x00 in the begining, 
+	@# files with 0x00 in the beginning, 
 	@# skipping all bytes, skips all differences, making files being considered equal
 	@(\
 		CMD="$(TARGET) -s3 file_07.bin file_08.bin"; \
@@ -619,7 +619,7 @@ test_26:
 	@# files of different sizes,
 	@# skipping number of bytes specified in hexadecimal,
 	@# files with differences before the end of the smaller one,
-	@# it skips all differences but files are of differente sizes are different
+	@# it skips all differences but files are of different sizes are different
 	@(\
 		CMD="$(TARGET)  -s0x5ed file_01.bin file_05.bin"; \
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
@@ -633,7 +633,7 @@ test_26:
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_08.txt has 1 line and so the limit is correct (100 outputs and one message) ... \
-		# ... this is easier than check STDOUT number of lines beleive me \
+		# ... this is easier than check STDOUT number of lines believe me \
 		LINES_COUNT=$$(cat message_08.txt | wc -l); \
 		printf "$@ item 3: "; \
 		if [ $$LINES_COUNT -eq "1" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
@@ -762,7 +762,7 @@ test_32:
 test_33:
 	@# test if "../bcmp $(TMPDIR)/file_09.bin file_01.bin" returns 2 and error message in stderr,
 	@# first argument with file without read permission
-	@# using $(TMPDIR) because some deamons like Dropbox restore removed read permissions
+	@# using $(TMPDIR) because some daemons like Dropbox restore removed read permissions
 	@(\
 		rm -f $(TMPDIR)/file_09.bin; \
 		cp file_09.bin $(TMPDIR); \
@@ -784,7 +784,7 @@ test_33:
 test_34:
 	@# test if "../bcmp file_01.bin $(TMPDIR)/file_09.bin" returns 2 and error message in stderr,
 	@# second argument with file without read permission
-	@# using $(TMPDIR) because some deamons like Dropbox restore removed read permissions
+	@# using $(TMPDIR) because some daemons like Dropbox restore removed read permissions
 	@(\
 		rm -f $(TMPDIR)/file_09.bin; \
 		cp file_09.bin $(TMPDIR); \
@@ -806,7 +806,7 @@ test_34:
 test_35:
 	@# test if "../bcmp $(TMPDIR)/file_09.bin $(TMPDIR)/file_09.bin" returns 2 and error message in stderr,
 	@# both arguments with files without read permission
-	@# using $(TMPDIR) because some deamons like Dropbox restore removed read permissions
+	@# using $(TMPDIR) because some daemons like Dropbox restore removed read permissions
 	@(\
 		rm -f $(TMPDIR)/file_09.bin; \
 		cp file_09.bin $(TMPDIR); \
@@ -965,7 +965,7 @@ test_43:
 
 test_44:
 	@# test if "../bcmp --skip -0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
-	@# negative value specified in hexdecimal on argument for numeric option --skip with space
+	@# negative value specified in hexadecimal on argument for numeric option --skip with space
 	@(\
 		CMD="$(TARGET) --skip -0xa0 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -1082,7 +1082,7 @@ test_50:
 		printf "\n"; \
 	)
 
-# TODO test files bigger than 54536 equal and different skiping more than 65536 byes in a file bigger than that euqal and different
+# TODO test files bigger than 54536 equal and different skipping more than 65536 byes in a file bigger than that euqal and different
 
 # options and argument error tests (dependent on getopt behavior put here to clarify its behavior)
 test_51:
@@ -1561,7 +1561,6 @@ test_75:
 test_76:
 	@# test if "../bcmp -n0x8000000000000000 file_01.bin file_03.bin" returns 2 and message in stderr,
 	@# passing a parameter that overflows off_t used internally
-
 	@(\
 		CMD="$(TARGET) -n0x8000000000000000 file_01.bin file_03.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -1579,7 +1578,6 @@ test_76:
 test_77:
 	@# test if "../bcmp -n0x10000000000000000 file_01.bin file_03.bin" returns 2 and message in stderr,
 	@# passing a parameter that overflows unsigned long long for parameters
-
 	@(\
 		CMD="$(TARGET) -n0x10000000000000000 file_01.bin file_03.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -1597,7 +1595,6 @@ test_77:
 test_78:
 	@# test if "../bcmp -n0x7FFFFFFFFFFFFFFF file_01.bin file_03.bin" returns 1 and message in stdout,
 	@# passing maximum value possible for off_t used internally
-	@
 	@(\
 		CMD="$(TARGET) -n0x7FFFFFFFFFFFFFFF file_01.bin file_03.bin"; \
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
@@ -1830,4 +1827,6 @@ summary:
 		printf "Passed: $$PASSED\n"; \
 		printf "Failed: $$FAILS\n"; \
 		printf "Skipped: $$SKIPS\n"; \
+		\
+		rm -f $(LOG); \
 	)
