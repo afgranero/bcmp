@@ -1,0 +1,1 @@
+Only one file can be read from standard input.

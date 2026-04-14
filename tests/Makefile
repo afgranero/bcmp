@@ -103,6 +103,7 @@ ALL_TESTS = test_01 \
 			test_87 \
 			test_88 \
 			test_89 \
+			test_90 \
 			summary
 
 RED   = \033[31m
@@ -1796,7 +1797,7 @@ test_88:
 	)
 
 test_89:
-	@# test if "head -c 4095 file_01.bin | ../bcmp -s4096 file_03.bin -" returns 2 and message in stderr,
+	@# test if "head -c 4095 file_02.bin | ../bcmp -s4096 file_01.bin -" returns 2 and message in stderr,
 	@# files differ
 	@# file is received from stdin on second parameter
 	@# skips past the end of file
@@ -1814,19 +1815,41 @@ test_89:
 		printf "\n"; \
 	)
 
+test_90:
+	@# test if "cat file_03.bin | ../bcmp - -" returns 2 and message in stderr,
+	@# file is received from stdin on second parameter
+	@# skips past the end of file
+	@(\
+		CMD="$(TARGET) - -"; \
+		STDERR=$$(cat file_03.bin | $$CMD 2>&1 >/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDERR" | diff -q - message_41.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
 summary:
 	@(\
-		TOTAL=$$(cat $(LOG) | wc -l ); \
-		PASSED=$$(cat $(LOG) | grep Pass | wc -l); \
-		FAILS=$$(cat $(LOG) | grep Fail | wc -l); \
-		SKIPS=$$(cat $(LOG) | grep Skipped | wc -l); \
-		\
-		printf "\n"; \
-		printf "Results\n\n"; \
-		printf "Total tests: $$TOTAL\n"; \
-		printf "Passed: $$PASSED\n"; \
-		printf "Failed: $$FAILS\n"; \
-		printf "Skipped: $$SKIPS\n"; \
-		\
-		rm -f $(LOG); \
+		if [ -f "$(LOG)" ]; then \
+			TOTAL=$$(cat $(LOG) | wc -l ); \
+			PASSED=$$(cat $(LOG) | grep Pass | wc -l); \
+			FAILS=$$(cat $(LOG) | grep Fail | wc -l); \
+			SKIPS=$$(cat $(LOG) | grep Skipped | wc -l); \
+			\
+			printf "\n"; \
+			printf "Results\n\n"; \
+			printf "Total tests: $$TOTAL\n"; \
+			printf "Passed: $$PASSED\n"; \
+			printf "Failed: $$FAILS\n"; \
+			printf "Skipped: $$SKIPS\n"; \
+			\
+			rm -f $(LOG); \
+		else\
+			printf "'summary' target can not be called directly.\n"; \
+		fi; \
 	)
