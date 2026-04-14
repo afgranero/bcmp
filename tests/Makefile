@@ -156,7 +156,7 @@ test_02:
 
 # help tests
 test_03:
-	@# test if "../bcmp" with no paramters returns 2 and help text in stderr,
+	@# test if "../bcmp" with no parameters returns 2 and help text in stderr,
 	@# lack of required arguments is an error and shows help text
 	@(\
 		CMD="$(TARGET)"; \
@@ -174,7 +174,7 @@ test_03:
 
 test_04:
 	@# test if "../bcmp --help" returns 0 and help text in stdout,
-	@# when resquesting help text is not treated as an error
+	@# when requesting help text is not treated as an error
 	@(\
 		CMD="$(TARGET) --help"; \
 		STDOUT=$$($$CMD 2> /dev/null); \
@@ -191,7 +191,7 @@ test_04:
 
 test_05:
 	@# test if "../bcmp --quiet --help" return 0 and help text in stdout,
-	@# --quiet does not supress --help
+	@# --quiet does not suppress --help
 	@(\
 		CMD="$(TARGET) --quiet --help"; \
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
@@ -208,7 +208,7 @@ test_05:
 
 test_06:
 	@# test if "../bcmp -q -h" returns 0 and help text in stdout,
-	@# -q  does not supress -h,
+	@# -q  does not suppress -h,
 	@# -q and -h are the same as --quiet and --help
 	@(\
 		CMD="$(TARGET) -q -h"; \
@@ -332,7 +332,7 @@ test_12:
 test_13:
 	@# test if "../bcmp file_07.bin file_08.bin" return 1 and message in stdout,
 	@# files differ,
-	@# files with 0x00 in the begining
+	@# files with 0x00 in the beginning
 	@(\
 		CMD="$(TARGET) file_07.bin file_08.bin"; \
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
@@ -346,7 +346,7 @@ test_13:
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_09.txt has 2 lines and so all differences are shown (this will matter in next test)... \
-		# ... this is easier than check STDOUT number of lines beleive me \
+		# ... this is easier than check STDOUT number of lines believe me \
 		LINES_COUNT=$$(cat message_09.txt | wc -l); \
 		printf "$@ item 3: "; \
 		if [ $$LINES_COUNT -eq "2" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
@@ -388,7 +388,7 @@ test_15:
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_09.txt has 2 lines and so all differences are still shown (like in previous test) ... \
-		# ... this is easier than check STDOUT number of lines beleive me \
+		# ... this is easier than check STDOUT number of lines believe me \
 		LINES_COUNT=$$(cat message_09.txt | wc -l); \
 		printf "$@ item 3: "; \
 		if [ $$LINES_COUNT -eq "2" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
@@ -413,7 +413,7 @@ test_16:
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_10.txt has 1 line and so one difference less is shown) ... \
-		# ... this is easier than check STDOUT number of lines beleive me \
+		# ... this is easier than check STDOUT number of lines believe me \
 		LINES_COUNT=$$(cat message_10.txt | wc -l); \
 		printf "$@ item 3: "; \
 		if [ $$LINES_COUNT -eq "1" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
@@ -439,7 +439,7 @@ test_17:
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_10.txt has 1 line and so one difference less is shown) ... \
-		# ... this is easier than check STDOUT number of lines beleive me \
+		# ... this is easier than check STDOUT number of lines believe me \
 		LINES_COUNT=$$(cat message_10.txt | wc -l); \
 		printf "$@ item 3: "; \
 		if [ $$LINES_COUNT -eq "1" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
@@ -507,7 +507,7 @@ test_20:
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_04.txt has 11 lines and so the limit is correct (100 outputs and one message) ... \
-		# ... this is easier than check STDOUT number of lines beleive me \
+		# ... this is easier than check STDOUT number of lines believe me \
 		LINES_COUNT=$$(cat message_04.txt | wc -l); \
 		printf "$@ item 3: "; \
 		if [ $$LINES_COUNT -eq "11" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
@@ -531,7 +531,7 @@ test_21:
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_07.txt has 4075 lines and so the limit is correct (100 outputs and one message) ... \
-		# ... this is easier than check STDOUT number of lines beleive me \
+		# ... this is easier than check STDOUT number of lines believe me \
 		LINES_COUNT=$$(cat message_07.txt | wc -l); \
 		printf "$@ item 3: "; \
 		if [ $$LINES_COUNT -eq "4075" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
@@ -608,7 +608,7 @@ test_25:
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_05.txt has 2 lines and so the limit is correct (100 outputs and one message) ... \
-		# ... this is easier than check STDOUT number of lines beleive me \
+		# ... this is easier than check STDOUT number of lines believe me \
 		LINES_COUNT=$$(cat message_05.txt | wc -l); \
 		printf "$@ item 3: "; \
 		if [ $$LINES_COUNT -eq "2" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
@@ -660,7 +660,7 @@ test_27:
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# this case documents that message_06.txt has 1 line and so the limit is correct (100 outputs and one message) ... \
-		# ... this is easier than check STDOUT number of lines beleive me \
+		# ... this is easier than check STDOUT number of lines believe me \
 		LINES_COUNT=$$(cat message_06.txt | wc -l); \
 		printf "$@ item 3: "; \
 		if [ $$LINES_COUNT -eq "1" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
@@ -1068,7 +1068,7 @@ test_49:
 
 test_50:
 	@# test if "../bcmp --limit -0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
-	@# negative value specified in hexdecimal on argument for numeric option --limit with space
+	@# negative value specified in hexadecimal on argument for numeric option --limit with space
 	@(\
 		CMD="$(TARGET) --limit -0xa0 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -1271,7 +1271,7 @@ test_61:
 		printf "$@ item 1: "; \
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
-		# ignore vaiable parts of the output message \
+		# ignore variable parts of the output message \
 		echo "$$STDOUT" | ( head -c 9; tail -c +3; ) | ( head -c 306; tail -c +8) | diff -q - message_version.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
@@ -1289,7 +1289,7 @@ test_62:
 		printf "$@ item 1: "; \
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
-		# ignore vaiable parts of the output message \
+		# ignore variable parts of the output message \
 		echo "$$STDOUT" | ( head -c 9; tail -c +3; ) | ( head -c 306; tail -c +8) | diff -q - message_version.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
@@ -1349,8 +1349,8 @@ test_65:
 	)
 
 test_66:
-	@# test if "../bcmp --helpa" returns 2 and error messaage and help text in stderr,
-	@# long option names must match completelly
+	@# test if "../bcmp --helpa" returns 2 and error message and help text in stderr,
+	@# long option names must match completely
 	@(\
 		CMD="$(TARGET) --helpa"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -1366,7 +1366,7 @@ test_66:
 	)
 
 test_67:
-	@# test if "../bcmp -qs4097 file_01.bin file_02.bin" returns 2 and error messaage in stderr,
+	@# test if "../bcmp -qs4097 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# one letter options can be fused in one, here -q -s4097
 	@(\
 		CMD="$(TARGET) -qs4097 file_01.bin file_02.bin"; \
@@ -1520,7 +1520,7 @@ test_74:
 			printf "\n"; \
 		else \
 			printf "$(YELLOW)Skipped$(RESET): file system '$$FS_TYPE' may not support sparse files.\n"; \
-			# necessary to count the two itens skipped \
+			# necessary to count the two items skipped \
 			printf "Skipped\nSkipped\n" >> $(LOG); \
 		fi; \
 	)
