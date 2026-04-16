@@ -21,6 +21,7 @@
     #endif
 #endif
 
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <string.h>
@@ -33,6 +34,9 @@
 #define DIFFERENT 1
 #define ERROR 2
 #define BUFFER_SIZE 65536
+
+int quiet = 0;
+int quiet_errors = 0;
 
 // On legacy 32-bit Intel architectures (i386 through early Pentium 4), ...
 // ... 'off_t' is typically 32-bit (4 bytes), limiting file offsets to 2GB, ...
@@ -58,16 +62,51 @@ char* file_size_limit(void) {
     return buffer;
 }
 
+int fprintf_error(FILE *stream, const char *format, ...) {
+    int result = 0;
+
+    if (!quiet_errors) {
+        va_list args;
+
+        va_start(args, format);
+        result = vfprintf(stream, format, args);
+        va_end(args);
+    }
+
+    return result;
+}
+
+int fprintf_message(FILE *stream, const char *format, ...) {
+    int result = 0;
+
+    if (!quiet) {
+        va_list args;
+
+        va_start(args, format);
+        result = vfprintf(stream, format, args);
+        va_end(args);
+    }
+
+    return result;
+}
+
 void print_help(FILE *out, char *prog) {
+
+    // do not show help in case of error if it is in silent mode
+    if (out == stderr && quiet_errors) {
+        return;
+    }
+
     fprintf(out, "Usage: %s [options] file1 file2\n", prog);
     fprintf(out, "Options:\n"
-                    "  -q, --quiet    quiet mode (exit 1 if different, 0 if equal)\n"
+                    "  -q, --quiet    quiet mode: no messages, only error messages\n"
+                    "  -S, --silent   silent mode: no messages at all, even errors\n"
                     "  -n, --limit N  max differences shown (default 100, 0 to show all)\n"
                     "  -s, --skip N   skip first N bytes (supports hex 0x...)\n"
                     "  -h, --help     display this help and exit\n"
                     "  -v, --version  output version information and exit\n"
                     "\n"
-                    "If file1 or file2 is '-' (but not both), read standard input.\n"
+                    "If file1 or file2 is '-' (but not both), read standard input for that file.\n"
                     "Exit status is 0 if inputs are the same, 1 if different, 2 if error.\n"
             );
 }
@@ -92,18 +131,18 @@ off_t parse_num(const char *str) {
     // strtoull returns unsigned long long but receiving a negative number returns a two's complement negation ...
     // .. so check if the first character is a minus sign.
     if (*str == '-') {
-        fprintf(stderr, "Error: Negative numbers are not allowed: '%s'\n", str);
+        fprintf_error(stderr,"Error: Negative numbers are not allowed: '%s'\n", str);
         exit(ERROR);
     }
 
     unsigned long long val = strtoull(str, &endptr, 0);
     if (str == endptr || *endptr != '\0') {
-        fprintf(stderr, "Error: '%s' is not a valid number.\n", str);
+        fprintf_error(stderr,"Error: '%s' is not a valid number.\n", str);
         exit(ERROR);
     }
 
     if (errno == ERANGE) {
-        fprintf(stderr, "Error: '%s' overflows internal representation for parameters.\n", str);
+        fprintf_error(stderr,"Error: '%s' overflows internal representation for parameters.\n", str);
         exit(ERROR);
     }
 
@@ -114,7 +153,7 @@ off_t parse_num(const char *str) {
     // ... either on 64 or 32 bit systems, so e added this check.
     // We chose to maintain each system's native typing to ensure consistent behavior.
     if (val > OFF_T_MAX) {
-        fprintf(stderr, "Error: '%s' overflows internal representation for counters.\n", str);
+        fprintf_error(stderr,"Error: '%s' overflows internal representation for counters.\n", str);
         exit(ERROR);
     }
 
@@ -128,7 +167,7 @@ off_t parse_num(const char *str) {
 FILE* safe_fopen(char *filename) {
     FILE *f = fopen(filename, "rb");
     if (!f) {
-        fprintf(stderr, "Error opening file: '%s': %s.\n", filename, strerror(errno));
+        fprintf_error(stderr,"Error opening file: '%s': %s.\n", filename, strerror(errno));
         exit(ERROR);
     }
     return f;
@@ -136,19 +175,19 @@ FILE* safe_fopen(char *filename) {
 
 off_t get_size(char *filename, FILE *f) {
     if (fseeko(f, 0, SEEK_END) != 0) {
-        fprintf(stderr, "Error: could not skip to end of file '%s': %s.\n", filename, strerror(errno));
+        fprintf_error(stderr,"Error: could not skip to end of file '%s': %s.\n", filename, strerror(errno));
         exit(ERROR);
     }
 
     off_t size = ftello(f);
     if (size == -1) {
-        fprintf(stderr, "Error: could not read size of file '%s': %s\n", filename, strerror(errno));
+        fprintf_error(stderr,"Error: could not read size of file '%s': %s\n", filename, strerror(errno));
         exit(ERROR);
     }
 
     // reposition the pointer
     if (fseeko(f, 0, SEEK_SET) != 0) {
-        fprintf(stderr, "Error: could not skip to beginning of the file '%s': %s.\n", filename, strerror(errno));
+        fprintf_error(stderr,"Error: could not skip to beginning of the file '%s': %s.\n", filename, strerror(errno));
         fclose(f);
         exit(ERROR);
     }
@@ -160,13 +199,13 @@ void safe_fseek(char *filename, FILE *f, off_t skip, off_t* size) {
     *size = get_size(filename, f);
 
     if (skip > *size) {
-        fprintf(stderr, "Error: Skip '%llu' is larger than size '%lld' of file '%s'.\n", (long long)skip, (long long)*size, filename);
+        fprintf_error(stderr,"Error: Skip '%llu' is larger than size '%lld' of file '%s'.\n", (long long)skip, (long long)*size, filename);
         fclose(f);
         exit(ERROR);
     }
 
     if (fseeko(f, skip, SEEK_SET) != 0) {
-        fprintf(stderr, "Error: could not skip to offset 0x%llx in file '%s': %s.\n", (long long)skip, filename, strerror(errno));
+        fprintf_error(stderr,"Error: could not skip to offset 0x%llx in file '%s': %s.\n", (long long)skip, filename, strerror(errno));
         fclose(f);
         exit(ERROR);
     }    
@@ -176,7 +215,7 @@ int is_stream(char *filename, FILE* stream) {
     struct stat st;
     
     if (fstat(fileno(stream), &st) != 0) {
-        fprintf(stderr, "Error: could not fstat: '%s': %s.", filename, strerror(errno));
+        fprintf_error(stderr,"Error: could not fstat: '%s': %s.", filename, strerror(errno));
         exit(ERROR);
     }
     return !(S_ISREG(st.st_mode));
@@ -206,11 +245,11 @@ void synthetic_fseek(char *filename, FILE *f, off_t skip) {
             if (feof(f)) {
                 // in this case the stream ended: so the skip value is bigger than the stream
                 // is to an error as safe_ferror treats those
-                fprintf(stderr, "Error: could not skip '0x%llx' bytes from stdin. EOF found after 0x%llx bytes read.\n", (long long)skip, (long long)read);
+                fprintf_error(stderr,"Error: could not skip '0x%llx' bytes from stdin. EOF found after 0x%llx bytes read.\n", (long long)skip, (long long)read);
                 exit(ERROR);
             } else {
                 // neither error of end of file
-                fprintf(stderr, "Unexpected error: could not skip '0x%llx' bytes from stdin. Stream stopped after 0x%llx bytes read without reaching EOF.\n", (long long)skip, (long long)read);
+                fprintf_error(stderr,"Unexpected error: could not skip '0x%llx' bytes from stdin. Stream stopped after 0x%llx bytes read without reaching EOF.\n", (long long)skip, (long long)read);
                 exit(ERROR);
             }
         }
@@ -280,7 +319,6 @@ void get_address_formatted(char* out, off_t address_dec, off_t size1,  off_t siz
 
 int main(int argc, char *argv[]) {
     int opt;
-    int quiet = 0;
     off_t limit = 100;
     off_t skip = 0;
     off_t diff_count = 0;
@@ -290,6 +328,7 @@ int main(int argc, char *argv[]) {
     // long options mapping
     static struct option long_options[] = {
         {"quiet",   no_argument,       NULL, 'q'},
+        {"silent",   no_argument,      NULL, 'S'},
         {"limit",   required_argument, NULL, 'n'},
         {"skip",    required_argument, NULL, 's'},
         {"version", no_argument,       NULL, 'v'},
@@ -298,9 +337,10 @@ int main(int argc, char *argv[]) {
     };
 
     // the last argument (&option_index) can be NULL if you don't need the index
-    while ((opt = getopt_long(argc, argv, "qn:s:vh", long_options, NULL)) != -1) {
+    while ((opt = getopt_long(argc, argv, "qSn:s:vh", long_options, NULL)) != -1) {
         switch (opt) {
             case 'q': quiet = 1; break;
+            case 'S': quiet = 1; quiet_errors = 1; break;
             case 'n': limit = parse_num(optarg); break;
             case 's': skip = parse_num(optarg); break;
             case 'v': print_version(); return 0;
@@ -318,7 +358,7 @@ int main(int argc, char *argv[]) {
     char* filename2 = argv[optind + 1];
     
     if (strcmp(filename1, "-") == 0 && strcmp(filename2, "-") == 0 )  {
-         fprintf(stderr, "Only one file can be read from standard input.\n");
+         fprintf_error(stderr,"Only one file can be read from standard input.\n");
          exit(ERROR);
     }
 

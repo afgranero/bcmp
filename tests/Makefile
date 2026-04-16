@@ -104,6 +104,37 @@ ALL_TESTS = test_01 \
 			test_88 \
 			test_89 \
 			test_90 \
+			test_91 \
+			test_92 \
+			test_93 \
+			test_94 \
+			test_95 \
+			test_96 \
+			test_97 \
+			test_98 \
+			test_99 \
+			test_100 \
+			test_101 \
+			test_102 \
+			test_103 \
+			test_104 \
+			test_105 \
+			test_106 \
+			test_107 \
+			test_108 \
+			test_109 \
+			test_110 \
+			test_111 \
+			test_112 \
+			test_113 \
+			test_114 \
+			test_115 \
+			test_116 \
+			test_117 \
+			test_118 \
+			test_119 \
+			test_120 \
+			test_121 \
 			summary
 
 RED   = \033[31m
@@ -298,7 +329,7 @@ test_10:
 test_11:
 	@# test if "../bcmp -q file_01.bin file_02.bin" returns 0 and no message 
 	@# equal files 
-	@# quiet
+	@# quiet mode
 	@(\
 		CMD="$(TARGET) -q file_01.bin file_02.bin"; \
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
@@ -307,7 +338,7 @@ test_11:
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		printf "$@ item 2: "; \
-		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		if [ -z "$$STDOUT" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -354,7 +385,7 @@ test_13:
 	)
 
 test_14:
-	@# test if "../bcmp -q file_01.bin file_03.bin" return 1 and no message,
+	@# test if "../bcmp -q file_01.bin file_03.bin" return 1 and no message in stdout,
 	@# files differ,
 	@# quiet mode
 	@(\
@@ -365,7 +396,7 @@ test_14:
 		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		printf "$@ item 2: "; \
-		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		if [ -z "$$STDOUT" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -540,9 +571,9 @@ test_21:
 
 # many differences quiet tests
 test_22:
-	@# test if "../bcmp -q file_01.bin file_04.bin" returns 1 and no messages, 
+	@# test if "../bcmp -q file_01.bin file_04.bin" returns 1 and no messages in stdout, 
 	@# files with many differences,
-	@# quiet mode
+	@# quiet mode,
 	@# stops by default after the first 100 differences (no way to test it as it shows none)
 	@(\
 		CMD="$(TARGET) -q file_01.bin file_04.bin"; \
@@ -552,12 +583,12 @@ test_22:
 		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		printf "$@ item 2: "; \
-		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		if [ -z "$$STDOUT" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
 test_23:
-	@# test if "../bcmp -q -n10 file_01.bin file_04.bin" returns 1 and message in stdout 
+	@# test if "../bcmp -q -n10 file_01.bin file_04.bin" returns 1 and no message in stdout 
 	@# files with many differences,
 	@# quiet mode
 	@# stops by request after the first 10 differences (no way to test it as it shows none)
@@ -569,13 +600,13 @@ test_23:
 		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		printf "$@ item 2: "; \
-		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		if [ -z "$$STDOUT" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
 test_24:
 	@# test if "../bcmp -q -n0 file_01.bin file_04.bin" returns 1 and no messages,
-	@# iles with many differences,
+	@# files with many differences,
 	@# quiet mode, 
 	@# search bye request all differences (no way to test it as it shows none), 
 	@(\
@@ -586,7 +617,7 @@ test_24:
 		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		printf "$@ item 2: "; \
-		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		if [ -z "$$STDOUT" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -670,7 +701,7 @@ test_27:
 
 # files of different sizes quiet tests
 test_28:
-	@# test if "../bcmp -q file_01.bin file_05.bin" return 1 and no message,
+	@# test if "../bcmp -q file_01.bin file_05.bin" return 1 and no message in stdout,
 	@# files of different sizes,
 	@# files different before the end of the smaller one,
 	@# quiet mode
@@ -682,15 +713,15 @@ test_28:
 		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		printf "$@ item 2: "; \
-		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		if [ -z "$$STDOUT" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
 
 test_29:
-	@# test if "../bcmp -q file_01.bin file_06.bin" return 1 and no message,
+	@# test if "../bcmp -q file_01.bin file_06.bin" return 1 and no message in stdout,
 	@# files of different sizes,
-	@# files equal until the last byte os the smaller one,
+	@# files equal until the last byte of the smaller one,
 	@# quiet mode
 	@(\
 		CMD="$(TARGET) -q file_01.bin file_06.bin"; \
@@ -700,7 +731,7 @@ test_29:
 		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		printf "$@ item 2: "; \
-		if [ -z $$STDOUT ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		if [ -z "$$STDOUT" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
@@ -1083,7 +1114,7 @@ test_50:
 		printf "\n"; \
 	)
 
-# TODO test files bigger than 54536 equal and different skipping more than 65536 byes in a file bigger than that euqal and different
+# TODO test files bigger than 54536 equal and different skipping more than 65536 byes in a file bigger than that equal and different
 
 # options and argument error tests (dependent on getopt behavior put here to clarify its behavior)
 test_51:
@@ -1830,6 +1861,532 @@ test_90:
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+# tests for -S, --silent options suppressing messages in stdout
+test_91:
+	@# test if "../bcmp --silent --help" return 0 and help text in stdout,
+	@# --silent does not suppress --help
+	@(\
+		CMD="$(TARGET) --silent --help"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_help.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_92:
+	@# test if "../bcmp -S -h" returns 0 and help text in stdout,
+	@# -S does not suppress -h,
+	@# -S and -h are the same as --silent and --help
+	@(\
+		CMD="$(TARGET) -S -h"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_help.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+
+test_93:
+	@# test if "../bcmp -S file_01.bin file_02.bin" returns 0 and no message in stdout, 
+	@# equal files,
+	@# silent mode,
+	@# suppress "Files are equal." message
+	@(\
+		CMD="$(TARGET) -S file_01.bin file_02.bin"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDOUT" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_94:
+	@# test if "../bcmp -S file_01.bin file_03.bin" return 1 and no message in stdout,
+	@# files differ,
+	@# silent mode,
+	@# suppress showing different bytes
+	@(\
+		CMD="$(TARGET) -S file_01.bin file_03.bin"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDOUT" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_95:
+	@# test if "../bcmp -S file_01.bin file_04.bin" returns 1 and no message in stdout, 
+	@# files with many differences,
+	@# silent mode,
+	@# stops by default after the first 100 differences (no way to test it as it shows none)
+	@(\
+		CMD="$(TARGET) -S file_01.bin file_04.bin"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDOUT" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_96:
+	@# test if "../bcmp -S -n10 file_01.bin file_04.bin" returns 1 and no message in stdout, 
+	@# files with many differences,
+	@# silent mode,
+	@# stops by request after the first 10 differences (no way to test it as it shows none)
+	@(\
+		CMD="$(TARGET) -S -n10 file_01.bin file_04.bin"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDOUT" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_97:
+	@# test if "../bcmp -S -n0 file_01.bin file_04.bin" returns 1 and no messages in stdout,
+	@# files with many differences,
+	@# silent mode, 
+	@# search bye request all differences (no way to test it as it shows none), 
+	@(\
+		CMD="$(TARGET) -S -n10 file_01.bin file_04.bin"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDOUT" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_98:
+	@# test if "../bcmp -S file_01.bin file_05.bin" return 1 and no message in stdout,
+	@# files of different sizes,
+	@# files different before the end of the smaller one,
+	@# silent mode
+	@(\
+		CMD="$(TARGET) -S file_01.bin file_05.bin"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDOUT" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+
+test_99:
+	@# test if "../bcmp -S file_01.bin file_06.bin" return 1 and no message in stdout,
+	@# files of different sizes,
+	@# files equal until the last byte of the smaller one,
+	@# silent mode
+	@(\
+		CMD="$(TARGET) -S file_01.bin file_06.bin"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDOUT" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+# tests for -S, --silent options suppressing error messages in stderr
+test_100:
+	@# test if "../bcmp -S" with no parameters returns 2 and and no message at stderr,
+	@# lack of required arguments is an error,
+	@# silent mode shows no error message
+	@(\
+		CMD="$(TARGET) -S"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_101:
+	@# test if "../bcmp -S file_00.bin file_01.bin" returns 2 and no error message in stderr,
+	@# first argument with non existent file
+	@# silent mode shows no error message
+	@(\
+		rm -f file_00.bin; \
+		CMD="$(TARGET) -S file_00.bin file_01.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_102:
+	@# test if "../bcmp -S file_01.bin file_00.bin" returns 2 and no error message in stderr,
+	@# second argument with non existent file,
+	@# silent mode shows no error message
+	@(\
+		rm -f file_00.bin; \
+		CMD="$(TARGET) -S file_00.bin file_01.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_103:
+	@# test if "../bcmp -S file_00.bin file_00.bin" returns 2 and no error message in stderr,
+	@# both arguments with non existent files,
+	@# silent mode shows no error message
+	@(\
+		rm -f file_00.bin; \
+		CMD="$(TARGET) -S file_00.bin file_01.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_104:
+	@# test if "../bcmp -S  $(TMPDIR)/file_09.bin file_01.bin" returns 2 and no error message in stderr,
+	@# first argument with file without read permission,
+	@# silent mode shows no error message,
+	@# using $(TMPDIR) because some daemons like Dropbox restore removed read permissions
+	@(\
+		rm -f $(TMPDIR)/file_09.bin; \
+		cp file_09.bin $(TMPDIR); \
+		chmod 224 $(TMPDIR)/file_09.bin; \
+		CMD="$(TARGET) -S $(TMPDIR)/file_09.bin file_01.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_105:
+	@# test if "../bcmp -S file_01.bin $(TMPDIR)/file_09.bin " returns 2 and no error message in stderr,
+	@# second argument with file without read permission,
+	@# silent mode shows no error message,
+	@# using $(TMPDIR) because some daemons like Dropbox restore removed read permissions
+	@(\
+		rm -f $(TMPDIR)/file_09.bin; \
+		cp file_09.bin $(TMPDIR); \
+		chmod 224 $(TMPDIR)/file_09.bin; \
+		CMD="$(TARGET) -S file_01.bin $(TMPDIR)/file_09.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_106:
+	@# test if "../bcmp -S $(TMPDIR)/file_09.bin $(TMPDIR)/file_09.bin" returns 2 and no error message in stderr,
+	@# both arguments with files without read permission,
+	@# silent mode shows no error message,
+	@# using $(TMPDIR) because some daemons like Dropbox restore removed read permissions
+	@(\
+		rm -f $(TMPDIR)/file_09.bin; \
+		cp file_09.bin $(TMPDIR); \
+		chmod 224 $(TMPDIR)/file_09.bin; \
+		CMD="$(TARGET) -S file_01.bin $(TMPDIR)/file_09.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_107:
+	@# test if "../bcmp -S -s4 file_07.bin file_01.bin" returns 2 and no error message in stderr,
+	@# skips past the end of first file,
+	@# silent mode shows no error message
+	@(\
+		CMD="$(TARGET) -S -s4 file_07.bin file_01.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_108:
+	@# test if "../bcmp -S -s4 file_01.bin file_07.bin" returns 2 and no error message in stderr,
+	@# skips past the end of second file,
+	@# silent mode shows no error message
+	@(\
+		CMD="$(TARGET) -S -s4 file_01.bin file_07.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_109:
+	@# test if "../bcmp -S -s4 file_07.bin file_07.bin" returns 2 and no error message in stderr,
+	@# skips past the end of both files,
+	@# silent mode shows no error message
+	@(\
+		CMD="$(TARGET) -S -s4 file_07.bin file_07.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_110:
+	@# test if "../bcmp -S -s-10 file_01.bin file_02.bin" returns 2 and no error message in stderr,
+	@# negative value specified in decimal on argument for numeric option -s without space,
+	@# silent mode shows no error message
+	@(\
+		CMD="$(TARGET) -S -s-10 file_01.bin file_02.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_111:
+	@# test if "../bcmp -S -s -10 file_01.bin file_02.bin" returns 2 and no error message in stderr,
+	@# negative value specified in decimal on argument for numeric option -s with space,
+	@# silent mode shows no error message
+	@(\
+		CMD="$(TARGET) -S -s -10 file_01.bin file_02.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_112:
+	@# test if "../bcmp -S -s-0xa0 file_01.bin file_02.bin" returns 2 and no error message in stderr,
+	@# negative value specified in hexadecimal on argument for numeric option -s without space,
+	@# silent mode shows no error message
+	@(\
+		CMD="$(TARGET) -S -s-0xa0 file_01.bin file_02.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_113:
+	@# test if "../bcmp -S -s -0xa0 file_01.bin file_02.bin" returns 2 and no error message in stderr,
+	@# negative value specified in hexadecimal on argument for numeric option -s with space,
+	@# silent mode shows no error message
+	@(\
+		CMD="$(TARGET) -S -s -0xa0 file_01.bin file_02.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+
+test_114:
+	@# test if "../bcmp -S --skip -10 file_01.bin file_02.bin" returns 2 and no error message in stderr,
+	@# negative value specified in decimal on argument for numeric option --skip with space,
+	@# silent mode shows no error message
+	@(\
+		CMD="$(TARGET) -S --skip -10 file_01.bin file_02.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_115:
+	@# test if "../bcmp -S --skip -0xa0 file_01.bin file_02.bin" returns 2 and no error message in stderr,
+	@# negative value specified in hexadecimal on argument for numeric option --skip with space,
+	@# silent mode shows no error message
+	@(\
+		CMD="$(TARGET) -S --skip -0xa0 file_01.bin file_02.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_116:
+	@# test if "../bcmp -S -n-10 file_01.bin file_02.bin" returns 2 and no error message in stderr,
+	@# negative value specified in decimal on argument for numeric option -n without space,
+	@# silent mode shows no error message
+	@(\
+		CMD="$(TARGET) -S -n-10 file_01.bin file_02.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_117:
+	@# test if "../bcmp -S -n -10 file_01.bin file_02.bin" returns 2 and no error message in stderr,
+	@# negative value specified in decimal on argument for numeric option -n with space,
+	@# silent mode shows no error message
+	@(\
+		CMD="$(TARGET) -S -n -10 file_01.bin file_02.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_118:
+	@# test if "../bcmp -S -n-0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
+	@# negative value specified in hexadecimal on argument for numeric option -n without space,
+	@# silent mode shows no error message
+	@(\
+		CMD="$(TARGET) -S -n-0xa0 file_01.bin file_02.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_119:
+	@# test if "../bcmp -S -n -0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
+	@# negative value specified in hexadecimal on argument for numeric option -n with space,
+	@# silent mode shows no error message
+	@(\
+		CMD="$(TARGET) -S -n -0xa0 file_01.bin file_02.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_120:
+	@# test if "../bcmp -S --limit -10 file_01.bin file_02.bin" returns 2 and error message in stderr,
+	@# negative value specified in decimal on argument for numeric option --limit with space,
+	@# silent mode shows no error message
+	@(\
+		CMD="$(TARGET) -S --limit -10 file_01.bin file_02.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_121:
+	@# test if "../bcmp -S --limit -0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
+	@# negative value specified in hexadecimal on argument for numeric option --limit with space,
+	@# silent mode shows no error message
+	@(\
+		CMD="$(TARGET) -S --limit -0xa0 file_01.bin file_02.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		printf "\n"; \
 	)
 
