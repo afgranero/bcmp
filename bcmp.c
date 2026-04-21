@@ -336,11 +336,20 @@ int main(int argc, char *argv[]) {
         {0, 0, 0, 0} // Array must be null-terminated
     };
 
+    // pre-scanning argv to avoid getopt_long printing error messages during processing if silent mode is asked
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-S") == 0 || strcmp(argv[i], "--silent") == 0) {
+            //opterr is a global included by getopt.h to control error output made by getopt_long
+            quiet = 1; quiet_errors = 1; opterr = 0; break;
+            break;
+        }
+    }
+
     // the last argument (&option_index) can be NULL if you don't need the index
     while ((opt = getopt_long(argc, argv, "qSn:s:vh", long_options, NULL)) != -1) {
         switch (opt) {
             case 'q': quiet = 1; break;
-            case 'S': quiet = 1; quiet_errors = 1; break;
+            case 'S': break; // already processed above
             case 'n': limit = parse_num(optarg); break;
             case 's': skip = parse_num(optarg); break;
             case 'v': print_version(); return 0;

@@ -2,11 +2,11 @@
 
 ## What it does
 
-I put this first as I think projects declare their purpose right away.
+I put this first as I think projects must declare their purpose right away.
 
 *bcmp* is a simple CLI program to compare binary files and output its differences in a simple, practical and logical way.
 
-If you wonder why not to use cmp the next section explains that.
+If you wonder why not to use *cmp* the next section explains that.
 
 ## Motivations
 
@@ -28,26 +28,25 @@ I had to compare the ROM file created from it with another. I used *GNU diffutil
 
 I tested a few alternatives:
 
-##### *vbindiff* (https://github.com/madsen/vbindiff)
+* *vbindiff* (https://github.com/madsen/vbindiff)
 
-It only shows both files like a *hexdump* with a split screen and navigates from difference to difference. 
+  It only shows both files like a *hexdump* with a split screen and navigates from difference to difference. 
 
-##### *hexcompare* (https://sourceforge.net/p/hexcompare/)
+* *hexcompare* (https://sourceforge.net/p/hexcompare/)
 
-It only shows a blue background with red squares where differences are on a split screen where bytes of the two files are shown side by side.
+   It only shows a blue background with red squares where differences are on a split screen where bytes of the two files are shown side by side.
 
-#### *radiff2* (https://github.com/radareorg/radare2/tree/master/binr/radiff2)
+* *radiff2* (https://github.com/radareorg/radare2/tree/master/binr/radiff2)
 
-Similar to *vbindiff*, with a better interface.
+   Similar to *vbindiff*, with a better interface.
 
-#### *dhex* (https://github.com/cxd4/dhex)
+* *dhex* (https://github.com/cxd4/dhex)
 
-An hexadecimal editor with a compare mode.
+   An hexadecimal editor with a compare mode.
 
 ### Conclusion
 
-I just wanted a simple CLI tool that showed me only the differences in an objective and practical way.
-I was so surprised and annoyed that no such a thing existed that I decided to make one.
+I just wanted a simple CLI tool that showed me only the differences in a practical way. I was so surprised and annoyed that no such a thing existed that I decided to make one.
 
 ## Decisions
 
@@ -57,7 +56,7 @@ I made some decisions about the program and pondered a lot about them. This sect
 
 * not to use any dependency outside the C Standard Library, this way it is easy to compile and install;
 
-* the program is too simple and monolithic without reusable parts; there are no unit tests, only black box tests, without using any test framework.  This way the tests are completely oblivious of the details of the program. If in the future I rewrite *bcmp* in Rust for instance those tests will still work;
+* the program is too simple and monolithic, and without reusable parts; there are no unit tests, only black box tests, without using any test framework.  This way the tests are completely oblivious of the details of the program. If in the future I rewrite *bcmp* in Rust for instance those tests will still work;
 
 * each test in the *makefile* runs on a sub shell so it does not leave any  remains in variables to interfere in the other tests;
 
@@ -138,6 +137,8 @@ make uninstall
 
 ## Testing
 
+The rationale for the way I made the tests is above at [Design](#design)
+
 Before tests, go to */tests* directory.
 
 To run all tests, do:
@@ -158,7 +159,6 @@ Not all things were decided, some features still can be added:
 
 * different offsets to skip for each file, like in *cmp*;
 
-* an option to silence all messages including error messages;
 
 
 
