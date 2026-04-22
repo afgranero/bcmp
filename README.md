@@ -60,7 +60,7 @@ To run all tests, do:
 make
 ```
 
-To run an specific test, do:
+To run a specific test, do:
 
 ```
 make test_01
@@ -243,7 +243,7 @@ While developing the program:
 
 * https://github.com/afgranero/ExtractAsmFromPages;
 * https://bitbucket.org/afgranero/extractasmfrompages;
-* DOIT Codeberg link
+* https://codeberg.org/agranero/ExtractAsmFromPages;
 
 I had to compare the ROM file created from it with another. I used *GNU diffutils cmp*. I found it deficient in several things:
 
