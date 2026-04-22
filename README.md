@@ -76,14 +76,16 @@ $ ./bcmp -h
 
 ```
 Usage: bcmp [options] file1 file2
-Options:
--q, --quiet    quiet mode: no messages, only error messages
--S, --silent   silent mode: no messages at all, even errors
--n, --limit N  max differences shown (default 100, 0 to show all)
--s, --skip N   skip first N bytes (supports hex 0x...)
--h, --help     display this help and exit
--v, --version  output version information and exit
 
+Options:
+  -q, --quiet    quiet mode: no messages, only error messages
+  -S, --silent   silent mode: no messages at all, even errors
+  -n, --limit N  max differences shown (default 100, 0 to show all)
+  -s, --skip N   skip first N bytes
+  -h, --help     display this help and exit
+  -v, --version  output version information and exit
+
+Options with numeric parameters support decimal, hex with Ox prefix, and octal with 0 prefix.
 If file1 or file2 is '-' (but not both), read standard input for that file.
 Exit status is 0 if inputs are the same, 1 if different, 2 if error.
 ```
@@ -200,7 +202,7 @@ bcmp -s 0x0900 file_01.bin file_03.bin
 
 Notice this skips the first bytes to be compared, not the first differences.
 
-Notice also that in any numerical parameter of an option you can pass hexadecimal or octal values using the prefixes *0x* and *0o* respectively.
+Notice also that in any numerical parameter of an option you can pass hexadecimal or octal values using the prefixes *0x* and *0* respectively.
 
 ### Using files streamed from *stdin*
 

@@ -98,14 +98,16 @@ void print_help(FILE *out, char *prog) {
     }
 
     fprintf(out, "Usage: %s [options] file1 file2\n", prog);
+    fprintf(out, "\n");
     fprintf(out, "Options:\n"
                     "  -q, --quiet    quiet mode: no messages, only error messages\n"
                     "  -S, --silent   silent mode: no messages at all, even errors\n"
                     "  -n, --limit N  max differences shown (default 100, 0 to show all)\n"
-                    "  -s, --skip N   skip first N bytes (supports hex 0x...)\n"
+                    "  -s, --skip N   skip first N bytes\n"
                     "  -h, --help     display this help and exit\n"
                     "  -v, --version  output version information and exit\n"
                     "\n"
+                    "Options with numeric parameters support decimal, hex with Ox prefix, and octal with 0 prefix.\n"
                     "If file1 or file2 is '-' (but not both), read standard input for that file.\n"
                     "Exit status is 0 if inputs are the same, 1 if different, 2 if error.\n"
             );
