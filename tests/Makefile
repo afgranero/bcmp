@@ -173,7 +173,7 @@ test_01:
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# ignore variable parts of the output message \
-		echo "$$STDOUT" | ( head -c 9; tail -c +3; ) | ( head -c 306; tail -c +8) | diff -q - message_version.txt > /dev/null 2>&1; \
+		echo "$$STDOUT" | ( head -c 10; tail -c +3; ) | ( head -c 308; tail -c +8) | diff -q - message_version.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
@@ -191,7 +191,7 @@ test_02:
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# ignore variable parts of the output message \
-		echo "$$STDOUT" | ( head -c 9; tail -c +3; ) | ( head -c 306; tail -c +8) | diff -q - message_version.txt > /dev/null 2>&1; \
+		echo "$$STDOUT" | ( head -c 10; tail -c +3; ) | ( head -c 308; tail -c +8) | diff -q - message_version.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
@@ -1326,7 +1326,7 @@ test_61:
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# ignore variable parts of the output message \
-		echo "$$STDOUT" | ( head -c 9; tail -c +3; ) | ( head -c 306; tail -c +8) | diff -q - message_version.txt > /dev/null 2>&1; \
+		echo "$$STDOUT" | ( head -c 10; tail -c +3; ) | ( head -c 308; tail -c +8) | diff -q - message_version.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
@@ -1344,7 +1344,7 @@ test_62:
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
 		\
 		# ignore variable parts of the output message \
-		echo "$$STDOUT" | ( head -c 9; tail -c +3; ) | ( head -c 306; tail -c +8) | diff -q - message_version.txt > /dev/null 2>&1; \
+		echo "$$STDOUT" | ( head -c 10; tail -c +3; ) | ( head -c 308; tail -c +8) | diff -q - message_version.txt > /dev/null 2>&1; \
 		EXIT_VAL=$$?; \
 		printf "$@ item 2: "; \
 		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \

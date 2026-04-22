@@ -114,7 +114,8 @@ void print_help(FILE *out, char *prog) {
 }
 
 void print_version() {
-    fprintf(stdout, "bcmp 1.0 %ld-bit. A reimagined cmp (GNU diffutils).\n"
+    fprintf(stdout, "bcmp 1.0 (%ld-bit).\n" 
+                    "A reimagined cmp (GNU diffutils).\n"
                     "Copyright (C) Airton da Fonseca Granero.\n"
                     "License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.\n"
                     "This is free software: you are free to change and redistribute it.\n"
