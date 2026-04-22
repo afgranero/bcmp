@@ -150,7 +150,7 @@ If there are many differences it shows the first 100 by default:
 Limit of 100 differences reached. Stopping.
 ```
 
-This can be overridden by options * -n* orr *--limit* followed numeric parameter:
+This can be overridden by options *-n* or *--limit* followed by a numeric parameter:
 
 ```
 ./bcmp -n 3 file_01.bin file_04.bin
@@ -219,7 +219,14 @@ or
 cat file_03.bin | ./bcmp file_01.bin
 ```
 
-This is useful for pre processing the file, for instance with *head*, *tail*, * crop*, or others.
+This is useful for pre processing the file, for instance with *head*, *tail*, or others.
+
+
+### Exit codes
+
+0: equal\
+1: different\
+2: error
 
 ### Suppressing messages:
 

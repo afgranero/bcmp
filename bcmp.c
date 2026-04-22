@@ -153,7 +153,7 @@ off_t parse_num(const char *str) {
     // On legacy 32-bit systems (without _FILE_OFFSET_BITS=64), off_t may only be 32-bit.
     // Since we use strtoull (always 64-bit unsigned long long ), the converted value might be ...
     // ... valid for strtoull (not triggering ERANGE), but still exceed the local off_t capacity, ...
-    // ... either on 64 or 32 bit systems, so e added this check.
+    // ... either on 64 or 32 bit systems, so we added this check.
     // We chose to maintain each system's native typing to ensure consistent behavior.
     if (val > OFF_T_MAX) {
         fprintf_error(stderr,"Error: '%s' overflows internal representation for counters.\n", str);
