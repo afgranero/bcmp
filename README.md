@@ -97,7 +97,7 @@ $ ./bcmp -v
 ```
 
 ```
-bcmp 1.0 64-bit. 
+bcmp 1.0 (64-bit).
 A reimagined cmp (GNU diffutils).
 Copyright (C) Airton da Fonseca Granero.
 License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
