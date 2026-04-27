@@ -40,7 +40,7 @@ ALL_TESTS = test_01 \
 			test_24 \
 			test_25 \
 			test_26 \
-			test_27 \
+			test_27	\
 			test_28 \
 			test_29 \
 			test_30 \
@@ -146,6 +146,8 @@ ALL_TESTS = test_01 \
 			test_130 \
 			test_131 \
 			test_132 \
+			test_133 \
+			test_134 \
 			summary
 
 RED   = \033[31m
@@ -667,6 +669,31 @@ test_25:
 	)
 
 test_26:
+	@# test if "../bcmp file_05.bin file_01.bin" returns 1 and message in stdout,
+	@# files of different sizes, 
+	@# files with differences before the end of the smaller one,
+	@# test_25 with files reversed
+	@(\
+		CMD="$(TARGET) file_05.bin file_01.bin"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_42.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		# this case documents that message_42.txt has 2 lines and so the limit is correct (100 outputs and one message) ... \
+		# ... this is easier than check STDOUT number of lines believe me \
+		LINES_COUNT=$$(cat message_42.txt | wc -l); \
+		printf "$@ item 3: "; \
+		if [ $$LINES_COUNT -eq "2" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_27:
 	@# test if "../bcmp -s0x5ed file_01.bin file_05.bin" returns 1 and messages in stdout,
 	@# files of different sizes,
 	@# skipping number of bytes specified in hexadecimal,
@@ -692,8 +719,7 @@ test_26:
 		printf "\n"; \
 	)
 
-
-test_27:
+test_28:
 	@# test if "../bcmp file_01.bin file_06.bin" return 1 and message in stdout,
 	@# files of different sizes, 
 	@# files are equal until the last byte of the smaller one,
@@ -718,9 +744,34 @@ test_27:
 		printf "\n"; \
 	)
 
+test_29:
+	@# test if "../bcmp file_06.bin file_01.bin" return 1 and message in stdout,
+	@# files of different sizes, 
+	@# files are equal until the last byte of the smaller one,
+	@# still considers files different as file sizes are different,
+	@# test_28 with files reversed
+	@(\
+		CMD="$(TARGET) file_06.bin file_01.bin"; \
+		STDOUT=$$($$CMD >&1 2>/dev/null); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 1 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		echo "$$STDOUT" | diff -q - message_06.txt > /dev/null 2>&1; \
+		EXIT_VAL=$$?; \
+		printf "$@ item 2: "; \
+		if [ $$EXIT_VAL -eq 0 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		# this case documents that message_06.txt has 1 line and so the limit is correct (100 outputs and one message) ... \
+		# ... this is easier than check STDOUT number of lines believe me \
+		LINES_COUNT=$$(cat message_06.txt | wc -l); \
+		printf "$@ item 3: "; \
+		if [ $$LINES_COUNT -eq "1" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
 
 # files of different sizes quiet tests
-test_28:
+test_30:
 	@# test if "../bcmp -q file_01.bin file_05.bin" return 1 and no message in stdout,
 	@# files of different sizes,
 	@# files different before the end of the smaller one,
@@ -739,12 +790,12 @@ test_28:
 	)
 
 
-test_29:
+test_31:
 	@# test if "../bcmp -q file_01.bin file_06.bin" return 1 and no message in stdout,
 	@# files of different sizes,
 	@# files equal until the last byte of the smaller one,
 	@# quiet mode,
-	@# test_27 in quiet mode
+	@# test_28 in quiet mode
 	@(\
 		CMD="$(TARGET) -q file_01.bin file_06.bin"; \
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
@@ -757,10 +808,8 @@ test_29:
 		printf "\n"; \
 	)
 
-# TODO two tests with both files of different sizes reversed
-
 # error tests
-test_30:
+test_32:
 	@# test if "../bcmp file_00.bin file_01.bin" returns 2 and error message in stderr,
 	@# first argument with non existent file 
 	@(\
@@ -778,7 +827,7 @@ test_30:
 		printf "\n"; \
 	)
 
-test_31:
+test_33:
 	@# test if "../bcmp file_01.bin file_00.bin" returns 2 and error message in stderr,
 	@# second argument with non existent file
 	@(\
@@ -796,7 +845,7 @@ test_31:
 		printf "\n"; \
 	)
 
-test_32:
+test_34:
 	@# test if "../bcmp file_00.bin file_00.bin" returns 2 and error message in stderr,
 	@#  both arguments with non existent files
 	@(\
@@ -814,7 +863,7 @@ test_32:
 		printf "\n"; \
 	)
 
-test_33:
+test_35:
 	@# test if "../bcmp $(TMPDIR)/file_09.bin file_01.bin" returns 2 and error message in stderr,
 	@# first argument with file without read permission,
 	@# using $(TMPDIR) because some daemons like Dropbox restore removed read permissions
@@ -836,7 +885,7 @@ test_33:
 		printf "\n"; \
 	)
 
-test_34:
+test_36:
 	@# test if "../bcmp file_01.bin $(TMPDIR)/file_09.bin" returns 2 and error message in stderr,
 	@# second argument with file without read permission,
 	@# using $(TMPDIR) because some daemons like Dropbox restore removed read permissions
@@ -858,7 +907,7 @@ test_34:
 		printf "\n"; \
 	)
 
-test_35:
+test_37:
 	@# test if "../bcmp $(TMPDIR)/file_09.bin $(TMPDIR)/file_09.bin" returns 2 and error message in stderr,
 	@# both arguments with files without read permission,
 	@# using $(TMPDIR) because some daemons like Dropbox restore removed read permissions
@@ -880,7 +929,7 @@ test_35:
 		printf "\n"; \
 	)
 
-test_36:
+test_38:
 	@# test if "../bcmp -s4 file_07.bin file_01.bin" returns 2 and error message in stderr,
 	@# skips past the end of first file
 	@(\
@@ -897,7 +946,7 @@ test_36:
 		printf "\n"; \
 	)
 
-test_37:
+test_39:
 	@# test if "../bcmp -s4 file_01.bin file_07.bin" returns 2 and error message in stderr,
 	@# skips past the end of second file
 	@(\
@@ -914,7 +963,7 @@ test_37:
 		printf "\n"; \
 	)
 
-test_38:
+test_40:
 	@# test if "../bcmp -s4 file_07.bin file_07.bin" returns 2 and error message in stderr,
 	@# skips past the end of both files
 	@(\
@@ -932,7 +981,7 @@ test_38:
 	)
 
 # options and argument error tests (not dependent on getopt)
-test_39:
+test_41:
 	@# test if "../bcmp -s-10 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in decimal on argument for numeric option -s without space
 	@(\
@@ -949,7 +998,7 @@ test_39:
 		printf "\n"; \
 	)
 
-test_40:
+test_42:
 	@# test if "../bcmp -s -10 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in decimal on argument for numeric option -s with space
 	@(\
@@ -966,7 +1015,7 @@ test_40:
 		printf "\n"; \
 	)
 
-test_41:
+test_43:
 	@# test if "../bcmp -s-0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in hexadecimal on argument for numeric option -s without space
 	@(\
@@ -983,7 +1032,7 @@ test_41:
 		printf "\n"; \
 	)
 
-test_42:
+test_44:
 	@# test if "../bcmp -s -0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in hexadecimal on argument for numeric option -s with space
 	@(\
@@ -1001,7 +1050,7 @@ test_42:
 	)
 
 
-test_43:
+test_45:
 	@# test if "../bcmp --skip -10 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in decimal on argument for numeric option --skip with space
 	@(\
@@ -1018,7 +1067,7 @@ test_43:
 		printf "\n"; \
 	)
 
-test_44:
+test_46:
 	@# test if "../bcmp --skip -0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in hexadecimal on argument for numeric option --skip with space
 	@(\
@@ -1035,7 +1084,7 @@ test_44:
 		printf "\n"; \
 	)
 
-test_45:
+test_47:
 	@# test if "../bcmp -n-10 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in decimal on argument for numeric option -n without space
 	@(\
@@ -1052,7 +1101,7 @@ test_45:
 		printf "\n"; \
 	)
 
-test_46:
+test_48:
 	@# test if "../bcmp -n -10 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in decimal on argument for numeric option -n with space
 	@(\
@@ -1069,7 +1118,7 @@ test_46:
 		printf "\n"; \
 	)
 
-test_47:
+test_49:
 	@# test if "../bcmp -n-0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in hexadecimal on argument for numeric option -n without space
 	@(\
@@ -1086,7 +1135,7 @@ test_47:
 		printf "\n"; \
 	)
 
-test_48:
+test_50:
 	@# test if "../bcmp -n -0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in hexadecimal on argument for numeric option -n with space
 	@(\
@@ -1103,7 +1152,7 @@ test_48:
 		printf "\n"; \
 	)
 
-test_49:
+test_51:
 	@# test if "../bcmp --limit -10 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in decimal on argument for numeric option --limit with space
 	@(\
@@ -1120,7 +1169,7 @@ test_49:
 		printf "\n"; \
 	)
 
-test_50:
+test_52:
 	@# test if "../bcmp --limit -0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in hexadecimal on argument for numeric option --limit with space
 	@(\
@@ -1137,10 +1186,8 @@ test_50:
 		printf "\n"; \
 	)
 
-# TODO test files bigger than 54536 equal and different skipping more than 65536 byes in a file bigger than that equal and different
-
 # options and argument error tests (dependent on getopt behavior put here to clarify its behavior)
-test_51:
+test_53:
 	@# test if "../bcmp --skip-10 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in decimal on argument for numeric option --skip without space,
 	@# long options need an space before argument
@@ -1158,7 +1205,7 @@ test_51:
 		printf "\n"; \
 	)
 
-test_52:
+test_54:
 	@# test if "../bcmp --skip-0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in hexadecimal on argument for numeric option --skip without space,
 	@# long options need an space before argument
@@ -1176,7 +1223,7 @@ test_52:
 		printf "\n"; \
 	)
 
-test_53:
+test_55:
 	@# test if "../bcmp -s file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# -s requires a numerical argument it takes anything after it and tries to convert
 	@(\
@@ -1193,7 +1240,7 @@ test_53:
 		printf "\n"; \
 	)
 
-test_54:
+test_56:
 	@# test if "../bcmp --limit-10 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in decimal on argument for numeric option --limit without space,
 	@# long options need an space before argument
@@ -1211,9 +1258,9 @@ test_54:
 		printf "\n"; \
 	)
 
-test_55:
+test_57:
 	@# test if "../bcmp --limit-0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
-	@# negative value specified in hexadecimal on argument for numeric option --limit without space
+	@# negative value specified in hexadecimal on argument for numeric option --limit without space,
 	@# long options need an space before argument
 	@(\
 		CMD="$(TARGET) --limit-0xa0 file_01.bin file_02.bin"; \
@@ -1229,7 +1276,7 @@ test_55:
 		printf "\n"; \
 	)
 
-test_56:
+test_58:
 	@# test if "../bcmp -n file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# -n requires a numerical argument it takes anything after it and tries to convert
 	@(\
@@ -1246,7 +1293,7 @@ test_56:
 		printf "\n"; \
 	)
 
-test_57:
+test_59:
 	@# test if "../bcmp file_01.bin file_02.bin -n" returns 2 and error message in stderr,
 	@# -n option requires a numerical argument
 	@(\
@@ -1263,7 +1310,7 @@ test_57:
 		printf "\n"; \
 	)
 
-test_58:
+test_60:
 	@# test if "../bcmp file_01.bin file_02.bin --limit" returns 2 and error message in stderr,
 	@# --limit option requires a numerical argument
 	@(\
@@ -1280,7 +1327,7 @@ test_58:
 		printf "\n"; \
 	)
 
-test_59:
+test_61:
 	@# test if "../bcmp file_01.bin file_02.bin -s" returns 2 and error message in stderr,
 	@# -s option requires a numerical argument
 	@(\
@@ -1297,7 +1344,7 @@ test_59:
 		printf "\n"; \
 	)
 
-test_60:
+test_62:
 	@# test if "../bcmp file_01.bin file_02.bin --skip" returns 2 and error message in stderr,
 	@# --skip option requires a numerical argument
 	@(\
@@ -1315,8 +1362,8 @@ test_60:
 	)
 
 # options and argument behavior (dependent on getopt behavior put here to clarify its behavior)
-test_61:
-	@# test if "../bcmp -var" return 0 and version text in stdout
+test_63:
+	@# test if "../bcmp -var" return 0 and version text in stdout,
 	@# if the first letter of a one letter option with no argument matches one expected it is used and others ignored
 	@(\
 		CMD="$(TARGET) -var"; \
@@ -1333,8 +1380,8 @@ test_61:
 		printf "\n"; \
 	)
 
-test_62:
-	@# test if "../bcmp -vh" return 0 and version text in stdout
+test_64:
+	@# test if "../bcmp -vh" return 0 and version text in stdout,
 	@# if the first letter of a one letter option with no argument matches one expected it is used and others ignored
 	@(\
 		CMD="$(TARGET) -vh"; \
@@ -1351,8 +1398,8 @@ test_62:
 		printf "\n"; \
 	)
 
-test_63:
-	@# test if "../bcmp -hv" return 0 and help text in stdout
+test_65:
+	@# test if "../bcmp -hv" return 0 and help text in stdout,
 	@# if the first letter of a one letter option with no argument matches one expected it is used and others ignored
 	@(\
 		CMD="$(TARGET) -hv"; \
@@ -1368,7 +1415,7 @@ test_63:
 		printf "\n"; \
 	)
 
-test_64:
+test_66:
 	@# test if "../bcmp -not" return 2 and error message in stderr,
 	@# if the first letter of a one letter option with no and matches one expected it is used and the rest is used as argument
 	@(\
@@ -1385,7 +1432,7 @@ test_64:
 		printf "\n"; \
 	)
 
-test_65:
+test_67:
 	@# test if "../bcmp --skip0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# long name options with arguments need an space separating both
 	@(\
@@ -1402,7 +1449,7 @@ test_65:
 		printf "\n"; \
 	)
 
-test_66:
+test_68:
 	@# test if "../bcmp --helpa" returns 2 and error message and help text in stderr,
 	@# long option names must match completely
 	@(\
@@ -1419,7 +1466,7 @@ test_66:
 		printf "\n"; \
 	)
 
-test_67:
+test_69:
 	@# test if "../bcmp -qs4097 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# one letter options can be fused in one, here -q -s4097
 	@(\
@@ -1436,11 +1483,10 @@ test_67:
 		printf "\n"; \
 	)
 
-
 # tests for files bigger than the buffer size
-test_68:
+test_70:
 	@# test if "../bcmp file_13.bin file_14.bin" returns 0 and message in stdout,
-	@# files are equal
+	@# files are equal,
 	@# files are bigger than 65535 bytes (the size of the buffer)
 	@(\
 		CMD="$(TARGET) file_13.bin file_14.bin"; \
@@ -1456,9 +1502,9 @@ test_68:
 		printf "\n"; \
 	)
 
-test_69:
+test_71:
 	@# test if "../bcmp -n0 file_13.bin file_15.bin" returns 1 and message in stdout,
-	@# files are different
+	@# files are different,
 	@# files are bigger than 65536 bytes (the size of the buffer)
 	@(\
 		CMD="$(TARGET) -n0 file_13.bin file_15.bin"; \
@@ -1474,9 +1520,9 @@ test_69:
 		printf "\n"; \
 	)
 
-test_70:
+test_72:
 	@# test if "../bcmp -n0 file_15.bin file_13.bin" returns 1 and message in stdout,
-	@# files are different
+	@# files are different,
 	@# files are bigger than 65536 bytes (the size of the buffer)
 	@(\
 		CMD="$(TARGET) -n0 file_15.bin file_13.bin"; \
@@ -1492,10 +1538,11 @@ test_70:
 		printf "\n"; \
 	)
 
-test_71:
+# test files bigger than 65536 bytes equal and different skipping more than 65536 bytes in a file bigger than that equal and different
+test_73:
 	@# test if "../bcmp -s131500 -n0 file_13.bin file_14.bin" returns 0 and message in stdout,
-	@# files are equal
-	@# skipping more then 65536 bytes
+	@# files are equal,
+	@# skipping more then 65536 bytes,
 	@# files are bigger than 65536 bytes (the size of the buffer)
 	@(\
 		CMD="$(TARGET) -n0 file_13.bin file_14.bin"; \
@@ -1511,10 +1558,10 @@ test_71:
 		printf "\n"; \
 	)
 
-test_72:
+test_74:
 	@# test if "../bcmp -s131500 -n0 file_13.bin file_15.bin" returns 1 and message in stdout,
-	@# files are different
-	@# skipping more then 65536 bytes
+	@# files are different,
+	@# skipping more then 65536 bytes,
 	@# files are bigger than 65536 bytes (the size of the buffer)
 	@(\
 		CMD="$(TARGET) -s131500 -n0 file_13.bin file_15.bin"; \
@@ -1530,10 +1577,10 @@ test_72:
 		printf "\n"; \
 	)
 
-test_73:
+test_75:
 	@# test if "../bcmp -s131500 -n0 file_15.bin file_13.bin" returns 1 and message in stdout,
-	@# files are different
-	@# skipping more then 65536 bytes
+	@# files are different,
+	@# skipping more then 65536 bytes,
 	@# files are bigger than 65536 bytes (the size of the buffer)
 	@(\
 		CMD="$(TARGET) -s131500 -n0 file_15.bin file_13.bin"; \
@@ -1549,10 +1596,11 @@ test_73:
 		printf "\n"; \
 	)
 
+# test files bigger than 65536 bytes equal and different skipping more than 65536 bytes in a file bigger than that equal and different
 # big files tests
-test_74:
+test_76:
 	@# test if "../bcmp --skip 4800000000 file_5gb.bin file_5gb.bin" returns 0 and message in stdout,
-	@# files bigger than 2Gb
+	@# files bigger than 2Gb,
 	@# files are the same
 	@(\
 		FS_TYPE=$$(stat -f -c %T . 2>/dev/null || echo "unknown"); \
@@ -1579,9 +1627,9 @@ test_74:
 		fi; \
 	)
 
-test_75:
+test_77:
 	@# test if "../bcmp --skip 4800000000 file_5gb_1.bin file_5gb_2.bin" returns 0 and message in stdout,
-	@# files bigger than 2Gb
+	@# files bigger than 2Gb,
 	@# files are different
 	@(\
 		FS_TYPE=$$(stat -f -c %T . 2>/dev/null || echo "unknown"); \
@@ -1613,7 +1661,7 @@ test_75:
 		fi; \
 	)
 
-test_76:
+test_78:
 	@# test if "../bcmp -n0x8000000000000000 file_01.bin file_03.bin" returns 2 and message in stderr,
 	@# passing a parameter that overflows off_t used internally
 	@(\
@@ -1630,7 +1678,7 @@ test_76:
 		printf "\n"; \
 	)
 
-test_77:
+test_79:
 	@# test if "../bcmp -n0x10000000000000000 file_01.bin file_03.bin" returns 2 and message in stderr,
 	@# passing a parameter that overflows unsigned long long for parameters
 	@(\
@@ -1647,7 +1695,7 @@ test_77:
 		printf "\n"; \
 	)
 
-test_78:
+test_80:
 	@# test if "../bcmp -n0x7FFFFFFFFFFFFFFF file_01.bin file_03.bin" returns 1 and message in stdout,
 	@# passing maximum value possible for off_t used internally
 	@(\
@@ -1664,9 +1712,9 @@ test_78:
 		printf "\n"; \
 	)
 
-test_79:
+test_81:
 	@# test if "../bcmp -n0xFFFFFFFFFFFFFFFF file_01.bin file_03.bin" returns 1 and message in stdout,
-	@# passing maximum value possible for a parameter
+	@# passing maximum value possible for a parameter,
 	@# but this value overflows off_t used internally giving the correspondent error 
 	@(\
 		CMD="$(TARGET) -n0xFFFFFFFFFFFFFFFF file_01.bin file_03.bin"; \
@@ -1683,9 +1731,9 @@ test_79:
 	)
 
 # tests receiving file from stdin
-test_80:
+test_82:
 	@# test if "cat file_01.bin | ../bcmp - file_02.bin" return 0 and message in stdout,
-	@# equal files
+	@# equal files,
 	@# file is received from stdin on first parameter
 	@(\
 		CMD="$(TARGET) - file_02.bin"; \
@@ -1701,9 +1749,9 @@ test_80:
 		printf "\n"; \
 	)
 
-test_81:
+test_83:
 	@# test if "cat file_02.bin | ../bcmp file_01.bin -" return 0 and message in stdout,
-	@# equal files
+	@# equal files,
 	@# file is received from stdin on second parameter
 	@(\
 		CMD="$(TARGET) file_01.bin -"; \
@@ -1719,9 +1767,9 @@ test_81:
 		printf "\n"; \
 	)
 
-test_82:
+test_84:
 	@# test if "cat file_01.bin | ../bcmp - file_03.bin" returns 1 and message in stdout,
-	@# files differ
+	@# files differ,
 	@# file is received from stdin on first parameter
 	@(\
 		CMD="$(TARGET) - file_03.bin"; \
@@ -1737,9 +1785,9 @@ test_82:
 		printf "\n"; \
 	)
 
-test_83:
+test_85:
 	@# test if "cat file_03.bin | ../bcmp file_01.bin -" returns 1 and message in stdout,
-	@# files differ
+	@# files differ,
 	@# file is received from stdin on second parameter
 	@(\
 		CMD="$(TARGET) file_01.bin -"; \
@@ -1755,10 +1803,10 @@ test_83:
 		printf "\n"; \
 	)
 
-test_84:
+test_86:
 	@# test if "cat file_01.bin | ../bcmp -s0x019A - file_03.bin" returns 1 and message in stdout,
-	@# files differ
-	@# file is received from stdin on first parameter
+	@# files differ,
+	@# file is received from stdin on first parameter,
 	@# skips the first difference
 	@(\
 		CMD="$(TARGET) -s0x019A - file_03.bin"; \
@@ -1774,10 +1822,10 @@ test_84:
 		printf "\n"; \
 	)
 
-test_85:
+test_87:
 	@# test if "cat file_03.bin | ../bcmp -s0x019A file_01.bin -" returns 1 and message in stdout,
-	@# files differ
-	@# file is received from stdin on second parameter
+	@# files differ.
+	@# file is received from stdin on second parameter.
 	@# skips the first difference
 	@(\
 		CMD="$(TARGET) -s0x019A file_01.bin -"; \
@@ -1793,10 +1841,10 @@ test_85:
 		printf "\n"; \
 	)
 
-test_86:
+test_88:
 	@# test if "cat file_01.bin | ../bcmp -s4097 - file_03.bin" returns 2 and error message in stderr,
-	@# files differ
-	@# file is received from stdin on first parameter
+	@# files differ.
+	@# file is received from stdin on first parameter.
 	@# skips past the end of stream
 	@(\
 		CMD="$(TARGET) -s4097 - file_03.bin"; \
@@ -1812,10 +1860,10 @@ test_86:
 		printf "\n"; \
 	)
 
-test_87:
+test_89:
 	@# test if "cat file_03.bin | ../bcmp -s4097 file_01.bin -" returns 2 and message in stderr,
-	@# files differ
-	@# file is received from stdin on second parameter
+	@# files differ.
+	@# file is received from stdin on second parameter.
 	@# skips past the end of file
 	@(\
 		CMD="$(TARGET) -s4097 file_01.bin -"; \
@@ -1831,10 +1879,10 @@ test_87:
 		printf "\n"; \
 	)
 
-test_88:
+test_90:
 	@# test if "head -c 4095 file_01.bin | ../bcmp -s4096 - file_03.bin" returns 2 and message in stderr,
-	@# files differ
-	@# file is received from stdin on second parameter
+	@# files differ.
+	@# file is received from stdin on second parameter.
 	@# skips past the end of file
 	@(\
 		CMD="$(TARGET) -s4096 - file_03.bin"; \
@@ -1850,10 +1898,10 @@ test_88:
 		printf "\n"; \
 	)
 
-test_89:
+test_91:
 	@# test if "head -c 4095 file_02.bin | ../bcmp -s4096 file_01.bin -" returns 2 and message in stderr,
-	@# files differ
-	@# file is received from stdin on second parameter
+	@# files differ.
+	@# file is received from stdin on second parameter,
 	@# skips past the end of file
 	@(\
 		CMD="$(TARGET) -s4096 file_01.bin -"; \
@@ -1869,9 +1917,9 @@ test_89:
 		printf "\n"; \
 	)
 
-test_90:
+test_92:
 	@# test if "cat file_03.bin | ../bcmp - -" returns 2 and message in stderr,
-	@# file is received from stdin on second parameter
+	@# file is received from stdin on second parameter,
 	@# skips past the end of file
 	@(\
 		CMD="$(TARGET) - -"; \
@@ -1888,7 +1936,7 @@ test_90:
 	)
 
 # tests for -S, --silent options suppressing messages in stdout
-test_91:
+test_93:
 	@# test if "../bcmp --silent --help" return 0 and help text in stdout,
 	@# --silent does not suppress --help,
 	@# explicitly ashed help is not suppressed by -S,
@@ -1907,7 +1955,7 @@ test_91:
 		printf "\n"; \
 	)
 
-test_92:
+test_94:
 	@# test if "../bcmp -S -h" returns 0 and help text in stdout,
 	@# -S does not suppress -h,
 	@# -S and -h are the sae as --silent and --help,
@@ -1928,7 +1976,7 @@ test_92:
 	)
 
 
-test_93:
+test_95:
 	@# test if "../bcmp -S file_01.bin file_02.bin" returns 0 and no message in stdout, 
 	@# equal files,
 	@# silent mode,
@@ -1946,7 +1994,7 @@ test_93:
 		printf "\n"; \
 	)
 
-test_94:
+test_96:
 	@# test if "../bcmp -S file_01.bin file_03.bin" return 1 and no message in stdout,
 	@# files differ,
 	@# silent mode,
@@ -1964,7 +2012,7 @@ test_94:
 		printf "\n"; \
 	)
 
-test_95:
+test_97:
 	@# test if "../bcmp -S file_01.bin file_04.bin" returns 1 and no message in stdout, 
 	@# files with many differences,
 	@# silent mode,
@@ -1982,7 +2030,7 @@ test_95:
 		printf "\n"; \
 	)
 
-test_96:
+test_98:
 	@# test if "../bcmp -S -n10 file_01.bin file_04.bin" returns 1 and no messages in stdout,
 	@# files with many differences,
 	@# silent mode, 
@@ -2000,7 +2048,7 @@ test_96:
 		printf "\n"; \
 	)
 
-test_97:
+test_99:
 	@# test if "../bcmp -S -n0 file_01.bin file_04.bin" returns 1 and no messages in stdout,
 	@# files with many differences,
 	@# silent mode, 
@@ -2018,12 +2066,12 @@ test_97:
 		printf "\n"; \
 	)
 
-test_98:
+test_100:
 	@# test if "../bcmp -S file_01.bin file_05.bin" return 1 and no message in stdout,
 	@# files of different sizes,
 	@# files different before the end of the smaller one,
 	@# silent mode,
-	@# test_28 in silent mode
+	@# test_25 and test_30 in silent mode
 	@(\
 		CMD="$(TARGET) -S file_01.bin file_05.bin"; \
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
@@ -2037,12 +2085,12 @@ test_98:
 	)
 
 
-test_99:
+test_101:
 	@# test if "../bcmp -S file_01.bin file_06.bin" return 1 and no message in stdout,
 	@# files of different sizes,
 	@# files equal until the last byte of the smaller one,
 	@# silent mode shows no message,
-	@# test_27 and test_29 in silent mode 
+	@# test_28 and test_31 in silent mode 
 	@(\
 		CMD="$(TARGET) -S file_01.bin file_06.bin"; \
 		STDOUT=$$($$CMD >&1 2>/dev/null); \
@@ -2056,7 +2104,7 @@ test_99:
 	)
 
 # tests for -S, --silent options suppressing error messages in stderr
-test_100:
+test_102:
 	@# test if "../bcmp -S" returns 2 and and no message at stderr,
 	@# lack of required arguments is an error,
 	@# silent mode shows no error message,
@@ -2074,45 +2122,9 @@ test_100:
 	)
 
 # error tests section --silent options suppressing error messages in stderr
-test_101:
+test_103:
 	@# test if "../bcmp -S file_00.bin file_01.bin" returns 2 and no error message in stderr,
 	@# first argument with non existent file,
-	@# silent mode shows no error message,
-	@# test_30 in silent mode
-	@(\
-		rm -f file_00.bin; \
-		CMD="$(TARGET) -S file_00.bin file_01.bin"; \
-		STDERR=$$($$CMD 2>&1 >/dev/null ); \
-		EXIT_VAL=$$?; \
-		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
-		\
-		printf "$@ item 2: "; \
-		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
-		printf "\n"; \
-	)
-
-test_102:
-	@# test if "../bcmp -S file_01.bin file_00.bin" returns 2 and no error message in stderr,
-	@# second argument with non existent file,
-	@# silent mode shows no error message,
-	@# test_31 in silent mode
-	@(\
-		rm -f file_00.bin; \
-		CMD="$(TARGET) -S file_00.bin file_01.bin"; \
-		STDERR=$$($$CMD 2>&1 >/dev/null ); \
-		EXIT_VAL=$$?; \
-		printf "$@ item 1: "; \
-		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
-		\
-		printf "$@ item 2: "; \
-		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
-		printf "\n"; \
-	)
-
-test_103:
-	@# test if "../bcmp -S file_00.bin file_00.bin" returns 2 and no error message in stderr,
-	@# both arguments with non existent files,
 	@# silent mode shows no error message,
 	@# test_32 in silent mode
 	@(\
@@ -2129,11 +2141,47 @@ test_103:
 	)
 
 test_104:
+	@# test if "../bcmp -S file_01.bin file_00.bin" returns 2 and no error message in stderr,
+	@# second argument with non existent file,
+	@# silent mode shows no error message,
+	@# test_33 in silent mode
+	@(\
+		rm -f file_00.bin; \
+		CMD="$(TARGET) -S file_00.bin file_01.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_105:
+	@# test if "../bcmp -S file_00.bin file_00.bin" returns 2 and no error message in stderr,
+	@# both arguments with non existent files,
+	@# silent mode shows no error message,
+	@# test_34 in silent mode
+	@(\
+		rm -f file_00.bin; \
+		CMD="$(TARGET) -S file_00.bin file_01.bin"; \
+		STDERR=$$($$CMD 2>&1 >/dev/null ); \
+		EXIT_VAL=$$?; \
+		printf "$@ item 1: "; \
+		if [ $$EXIT_VAL -eq 2 ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		\
+		printf "$@ item 2: "; \
+		if [ -z "$$STDERR" ]; then printf "$(GREEN)Pass$(RESET).\n" | tee -a $(LOG); else printf "$(RED)Fail$(RESET).\n" | tee -a $(LOG); fi; \
+		printf "\n"; \
+	)
+
+test_106:
 	@# test if "../bcmp -S  $(TMPDIR)/file_09.bin file_01.bin" returns 2 and no error message in stderr,
 	@# first argument with file without read permission,
 	@# silent mode shows no error message,
 	@# using $(TMPDIR) because some daemons like Dropbox restore removed read permissions,
-	@# test_33 in silent mode
+	@# test_35 in silent mode
 	@(\
 		rm -f $(TMPDIR)/file_09.bin; \
 		cp file_09.bin $(TMPDIR); \
@@ -2149,12 +2197,12 @@ test_104:
 		printf "\n"; \
 	)
 
-test_105:
+test_107:
 	@# test if "../bcmp -S file_01.bin $(TMPDIR)/file_09.bin" returns 2 and no error message in stderr,
 	@# second argument with file without read permission,
 	@# silent mode shows no error message,
 	@# using $(TMPDIR) because some daemons like Dropbox restore removed read permissions,
-	@# test_34 in silent mode
+	@# test_36 in silent mode
 	@(\
 		rm -f $(TMPDIR)/file_09.bin; \
 		cp file_09.bin $(TMPDIR); \
@@ -2170,12 +2218,12 @@ test_105:
 		printf "\n"; \
 	)
 
-test_106:
+test_108:
 	@# test if "../bcmp -S $(TMPDIR)/file_09.bin $(TMPDIR)/file_09.bin" returns 2 and no error message in stderr,
 	@# both arguments with files without read permission,
 	@# silent mode shows no error message,
 	@# using $(TMPDIR) because some daemons like Dropbox restore removed read permissions,
-	@# test_35 in silent mode
+	@# test_37 in silent mode
 	@(\
 		rm -f $(TMPDIR)/file_09.bin; \
 		cp file_09.bin $(TMPDIR); \
@@ -2191,11 +2239,11 @@ test_106:
 		printf "\n"; \
 	)
 
-test_107:
+test_109:
 	@# test if "../bcmp -S -s4 file_07.bin file_01.bin" returns 2 and no error message in stderr,
 	@# skips past the end of first file,
 	@# silent mode shows no error message,
-	@# test_36 in silent mode
+	@# test_38 in silent mode
 	@(\
 		CMD="$(TARGET) -S -s4 file_07.bin file_01.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2208,11 +2256,11 @@ test_107:
 		printf "\n"; \
 	)
 
-test_108:
+test_110:
 	@# test if "../bcmp -S -s4 file_01.bin file_07.bin" returns 2 and no error message in stderr,
 	@# skips past the end of second file,
 	@# silent mode shows no error message,
-	@# test_37 in silent mode
+	@# test_39 in silent mode
 	@(\
 		CMD="$(TARGET) -S -s4 file_01.bin file_07.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2225,11 +2273,11 @@ test_108:
 		printf "\n"; \
 	)
 
-test_109:
+test_111:
 	@# test if "../bcmp -S -s4 file_07.bin file_07.bin" returns 2 and no error message in stderr,
 	@# skips past the end of both files,
 	@# silent mode shows no error message,
-	@# test_38 in silent mode
+	@# test_40 in silent mode
 	@(\
 		CMD="$(TARGET) -S -s4 file_07.bin file_07.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2243,11 +2291,11 @@ test_109:
 	)
 
 # options and argument error tests (not dependent on getopt) with --silent options suppressing error messages in stderr
-test_110:
+test_112:
 	@# test if "../bcmp -S -s-10 file_01.bin file_02.bin" returns 2 and no error message in stderr,
 	@# negative value specified in decimal on argument for numeric option -s without space,
 	@# silent mode shows no error message,
-	@# test_39 in silent mode
+	@# test_41 in silent mode
 	@(\
 		CMD="$(TARGET) -S -s-10 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2260,11 +2308,11 @@ test_110:
 		printf "\n"; \
 	)
 
-test_111:
+test_113:
 	@# test if "../bcmp -S -s -10 file_01.bin file_02.bin" returns 2 and no error message in stderr,
 	@# negative value specified in decimal on argument for numeric option -s with space,
 	@# silent mode shows no error message,
-	@# test_40 in silent mode
+	@# test_42 in silent mode
 	@(\
 		CMD="$(TARGET) -S -s -10 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2277,11 +2325,11 @@ test_111:
 		printf "\n"; \
 	)
 
-test_112:
+test_114:
 	@# test if "../bcmp -S -s-0xa0 file_01.bin file_02.bin" returns 2 and no error message in stderr,
 	@# negative value specified in hexadecimal on argument for numeric option -s without space,
 	@# silent mode shows no error message,
-	@# test_41 in silent mode
+	@# test_43 in silent mode
 	@(\
 		CMD="$(TARGET) -S -s-0xa0 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2294,11 +2342,11 @@ test_112:
 		printf "\n"; \
 	)
 
-test_113:
+test_115:
 	@# test if "../bcmp -S -s -0xa0 file_01.bin file_02.bin" returns 2 and no error message in stderr,
 	@# negative value specified in hexadecimal on argument for numeric option -s with space,
 	@# silent mode shows no error message,
-	@# test_42 in silent mode
+	@# test_44 in silent mode
 	@(\
 		CMD="$(TARGET) -S -s -0xa0 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2312,11 +2360,11 @@ test_113:
 	)
 
 
-test_114:
+test_116:
 	@# test if "../bcmp -S --skip -10 file_01.bin file_02.bin" returns 2 and no error message in stderr,
 	@# negative value specified in decimal on argument for numeric option --skip with space,
 	@# silent mode shows no error message,
-	@# test_43 in silent mode
+	@# test_45 in silent mode
 	@(\
 		CMD="$(TARGET) -S --skip -10 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2329,11 +2377,11 @@ test_114:
 		printf "\n"; \
 	)
 
-test_115:
+test_117:
 	@# test if "../bcmp -S --skip -0xa0 file_01.bin file_02.bin" returns 2 and no error message in stderr,
 	@# negative value specified in hexadecimal on argument for numeric option --skip with space,
 	@# silent mode shows no error message,
-	@# test_44 in silent mode
+	@# test_46 in silent mode
 	@(\
 		CMD="$(TARGET) -S --skip -0xa0 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2346,11 +2394,11 @@ test_115:
 		printf "\n"; \
 	)
 
-test_116:
+test_118:
 	@# test if "../bcmp -S -n-10 file_01.bin file_02.bin" returns 2 and no error message in stderr,
 	@# negative value specified in decimal on argument for numeric option -n without space,
 	@# silent mode shows no error message,
-	@# test_45 in silent mode
+	@# test_47 in silent mode
 	@(\
 		CMD="$(TARGET) -S -n-10 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2363,11 +2411,11 @@ test_116:
 		printf "\n"; \
 	)
 
-test_117:
+test_119:
 	@# test if "../bcmp -S -n -10 file_01.bin file_02.bin" returns 2 and no error message in stderr,
 	@# negative value specified in decimal on argument for numeric option -n with space,
 	@# silent mode shows no error message,
-	@# test_46 in silent mode
+	@# test_48 in silent mode
 	@(\
 		CMD="$(TARGET) -S -n -10 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2380,11 +2428,11 @@ test_117:
 		printf "\n"; \
 	)
 
-test_118:
+test_120:
 	@# test if "../bcmp -S -n-0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in hexadecimal on argument for numeric option -n without space,
 	@# silent mode shows no error message,
-	@# test_47 in silent mode
+	@# test_49 in silent mode
 	@(\
 		CMD="$(TARGET) -S -n-0xa0 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2397,11 +2445,11 @@ test_118:
 		printf "\n"; \
 	)
 
-test_119:
+test_121:
 	@# test if "../bcmp -S -n -0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in hexadecimal on argument for numeric option -n with space,
 	@# silent mode shows no error message,
-	@# test_48 in silent mode
+	@# test_50 in silent mode
 	@(\
 		CMD="$(TARGET) -S -n -0xa0 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2414,11 +2462,11 @@ test_119:
 		printf "\n"; \
 	)
 
-test_120:
+test_122:
 	@# test if "../bcmp -S --limit -10 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in decimal on argument for numeric option --limit with space,
 	@# silent mode shows no error message,
-	@# test_49 in silent mode
+	@# test_51 in silent mode
 	@(\
 		CMD="$(TARGET) -S --limit -10 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2431,11 +2479,11 @@ test_120:
 		printf "\n"; \
 	)
 
-test_121:
+test_123:
 	@# test if "../bcmp -S --limit -0xa0 file_01.bin file_02.bin" returns 2 and error message in stderr,
 	@# negative value specified in hexadecimal on argument for numeric option --limit with space,
 	@# silent mode shows no error message,
-	@# test_50 in silent mode
+	@# test_52 in silent mode
 	@(\
 		CMD="$(TARGET) -S --limit -0xa0 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2449,12 +2497,12 @@ test_121:
 	)
 
 # options and argument error tests (dependent on getopt behavior put here to clarify its behavior) in silent mode
-test_122:
+test_124:
 	@# test if "../bcmp -S --skip-10 file_01.bin file_02.bin" returns 2 and no error message in stderr,
 	@# negative value specified in decimal on argument for numeric option --skip without space,
 	@# long options need an space before argument,
 	@# silent mode shows no error message,
-	@# test_51 in silent mode
+	@# test_53 in silent mode
 	@(\
 		CMD="$(TARGET) -S --skip-10 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2467,13 +2515,13 @@ test_122:
 		printf "\n"; \
 	)
 
-test_123:
+test_125:
 	@# test if "../bcmp --skip-10 -S file_01.bin file_02.bin" returns 2 and no error message in stderr,
 	@# negative value specified in decimal on argument for numeric option --skip without space,
 	@# long options need an space before argument,
 	@# silent mode shows no error message,
 	@# silent mode works for get_opt_long messages independent of the silent option position,
-	@# test_51 in silent mode
+	@# test_53 in silent mode
 	@(\
 		CMD="$(TARGET) --skip-10 -S file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2486,12 +2534,12 @@ test_123:
 		printf "\n"; \
 	)
 
-test_124:
+test_126:
 	@# test if "../bcmp -S --skip-0xa0 file_01.bin file_02.bin" returns 2 and no error message in stderr,
 	@# negative value specified in hexadecimal on argument for numeric option --skip without space,
 	@# long options need an space before argument,
 	@# silent mode shows no error message,
-	@# test_52 in silent mode
+	@# test_54 in silent mode
 	@(\
 		CMD="$(TARGET) -S --skip-0xa0 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2504,11 +2552,11 @@ test_124:
 		printf "\n"; \
 	)
 
-test_125:
+test_127:
 	@# test if "../bcmp -S -s file_01.bin file_02.bin" returns 2 and no error message in stderr,
 	@# -s requires a numerical argument it takes anything after it and tries to convert,
 	@# silent mode shows no error message,
-	@# test_53 in silent mode
+	@# test_55 in silent mode
 	@(\
 		CMD="$(TARGET) -S -s file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2521,12 +2569,12 @@ test_125:
 		printf "\n"; \
 	)
 
-test_126:
+test_128:
 	@# test if "../bcmp -S --limit-10 file_01.bin file_02.bin" returns 2 and no error message in stderr,
 	@# negative value specified in decimal on argument for numeric option --limit without space,
 	@# long options need an space before argument,
 	@# silent mode shows no error message,
-	@# test_54 in silent mode
+	@# test_56 in silent mode
 	@(\
 		CMD="$(TARGET) -S --limit-10 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2539,12 +2587,12 @@ test_126:
 		printf "\n"; \
 	)
 
-test_127:
+test_129:
 	@# test if "../bcmp -S --limit-0xa0 file_01.bin file_02.bin" returns 2 and no error message in stderr,
 	@# negative value specified in hexadecimal on argument for numeric option --limit without space,
 	@# long options need an space before argument,
 	@# silent mode shows no error message,
-	@# test_55 in silent mode
+	@# test_57 in silent mode
 	@(\
 		CMD="$(TARGET) -S --limit-0xa0 file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2557,12 +2605,12 @@ test_127:
 		printf "\n"; \
 	)
 
-test_128:
+test_130:
 	@# test if "../bcmp -S -n file_01.bin file_02.bin" returns 2 and no error message in stderr,
 	@# -n requires a numerical argument it takes anything after it and tries to convert,
 	@# long options need an space before argument,
 	@# silent mode shows no error message,
-	@# test_56 in silent mode
+	@# test_58 in silent mode
 	@(\
 		CMD="$(TARGET) -S -n file_01.bin file_02.bin"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2575,11 +2623,11 @@ test_128:
 		printf "\n"; \
 	)
 
-test_129:
+test_131:
 	@# test if "../bcmp -S file_01.bin file_02.bin -n" returns 2 and no error message in stderr,
 	@# -n option requires a numerical argument,
 	@# silent mode shows no error message,
-	@# test_57 in silent mode
+	@# test_59 in silent mode
 	@(\
 		CMD="$(TARGET) -S file_01.bin file_02.bin -n"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2592,11 +2640,11 @@ test_129:
 		printf "\n"; \
 	)
 
-test_130:
+test_132:
 	@# test if "../bcmp -S file_01.bin file_02.bin --limit" returns 2 and no error message in stderr,
 	@# --limit option requires a numerical argument,
 	@# silent mode shows no error message,
-	@# test_58 in silent mode
+	@# test_60 in silent mode
 	@(\
 		CMD="$(TARGET) -S file_01.bin file_02.bin --limit"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2609,11 +2657,11 @@ test_130:
 		printf "\n"; \
 	)
 
-test_131:
+test_133:
 	@# test if "../bcmp -S file_01.bin file_02.bin -s" returns 2 and no error message in stderr,
 	@# -s option requires a numerical argument,
 	@# silent mode shows no error message,
-	@# test_59 in silent mode
+	@# test_61 in silent mode
 	@(\
 		CMD="$(TARGET) -S file_01.bin file_02.bin -s"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \
@@ -2626,11 +2674,11 @@ test_131:
 		printf "\n"; \
 	)
 
-test_132:
+test_134:
 	@# test if "../bcmp -S file_01.bin file_02.bin --skip" returns 2 and error message in stderr,
 	@# --skip option requires a numerical argument,
 	@# silent mode shows no error message,
-	@# test_60 in silent mode
+	@# test_62 in silent mode
 	@(\
 		CMD="$(TARGET) -S file_01.bin file_02.bin --skip"; \
 		STDERR=$$($$CMD 2>&1 >/dev/null ); \

@@ -316,7 +316,7 @@ Those are:
 
 * the *-S*, *--silent* options suppress all messages, even error ones, except help and version ones when explicitly asked for with * -h* and *--help* or *-v* and *--version* respectively.
 
-* the help screen shown when an improper option or parameter is used will return error code 2, if help is called explicitly, error code 0 is returned;
+* the help screen to be shown when an improper option or parameter is used will return error code 2, if help is called explicitly, error code 0 is returned;
 
 * *bcmp* accepts *-* as one of the mandatory file name parameters to accept redirected input from *stdin*;
 
@@ -358,5 +358,9 @@ Not all things were decided, some features still can be added:
 
 * different offsets to skip for each file, like in *cmp*;
 
+* when quiet or silent modes are engaged:
 
+   * stop at the first difference to return the exit code 1 faster;
+
+   * if file sizes are different do not make any comparison and return exit code 1 faster.
 
