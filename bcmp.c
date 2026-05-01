@@ -160,6 +160,7 @@ off_t parse_num(const char *str) {
         exit(ERROR);
     }
 
+    // the compiler has not how to know that I treated the overflow already so the pragmas
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wconversion"
     off_t result = (off_t)val;
@@ -280,7 +281,7 @@ off_t generic_get_size(char *filename, FILE *f) {
 }
 
 int get_blocks(off_t size) {
-    // returns the number blocks of 4 bytes neded for the address
+    // returns the number blocks of 4 bytes needed for the address
     int blocks = 0;
     off_t temp = (size - 1);
     do {
@@ -408,12 +409,10 @@ int main(int argc, char *argv[]) {
                 for (size_t i = 0; i < min_n; i++) {
                     if (buf1[i] != buf2[i]) {
                         get_address_formatted(address, offset + i, size1, size2);
-                        printf("%s: %02x %02x\n", address, buf1[i], buf2[i]);
+                        fprintf(stdout, "%s: %02x %02x\n", address, buf1[i], buf2[i]);
                         diff_count++;
                         if (limit > 0 && diff_count >= limit) {
-                            if (!quiet) {
-                                fprintf(stdout, "Limit of %lu differences reached. Stopping.\n", limit);                               
-                            }
+                            fprintf(stdout, "Limit of %lu differences reached. Stopping.\n", limit);
                             goto cleanup;
                         }
 
@@ -425,7 +424,7 @@ int main(int argc, char *argv[]) {
         if (n1 != n2) {
             if (!quiet) {
                 get_address_formatted(address, offset + min_n, size1, size2);
-                printf("%s: EOF on %s\n", address, (n1 < n2) ? filename1 : filename2);
+                fprintf(stdout, "%s: EOF on %s\n", address, (n1 < n2) ? filename1 : filename2);
             }
             result = DIFFERENT;
             break;
@@ -433,9 +432,7 @@ int main(int argc, char *argv[]) {
 
         // If both files ended at the exact same time
         if (n1 < BUFFER_SIZE && diff_count == 0) {
-            if (!quiet) {
-                fprintf(stdout, "Files are equal.\n");                               
-            }
+            fprintf_message(stdout, "Files are equal.\n");
             break;
         }
 

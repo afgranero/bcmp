@@ -239,7 +239,7 @@ All those options do not suppress help and version messages if they are asked ex
 
 ## Motivations
 
-While developing the program (That was basically a weekend project that got out of hand):
+While developing the program (That was basically a weekend project that got out of hand, the repos are not public at the moment but they will once they are mature):
 
 * https://github.com/afgranero/ExtractAsmFromPages;
 * https://bitbucket.org/afgranero/extractasmfrompages;
@@ -295,6 +295,8 @@ Those are:
 
 * the tests removing permissions are done in */tmp* directory as some cloud replication systems like Dropbox restore immediately removed permissions;
 
+* the files are always compared, even in quiet and silent modes. Files of different sizes are not considered different just because they are reported with different sizes. In files with problems the metadata of the file can be reporting wrong sizes while the files themselves are not corrupted. If you are suspicious of a file and and using *bcmp* to confirm and I do that I would not help;
+
 * the program is intended to work on any POSIX like environments:
 
     * Linux 64-bit systems;
@@ -344,7 +346,7 @@ Those are:
 
 ## Portability
 
-This was not tested yet in platforms other than Linux, so it may have problems on those platforms, specially in the tests.
+This was not tested yet in platforms other than Linux, so it may possibly have problems on those platforms, specially in the tests.
 
 In Cygwin the compiled program may be generated as *bcmp.exe*. This must be adjusted in the two makefiles.
 
@@ -358,9 +360,4 @@ Not all things were decided, some features still can be added:
 
 * different offsets to skip for each file, like in *cmp*;
 
-* when quiet or silent modes are engaged:
-
-   * stop at the first difference to return the exit code 1 faster;
-
-   * if file sizes are different do not make any comparison and return exit code 1 faster.
 
