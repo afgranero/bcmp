@@ -2,9 +2,7 @@
 
 ## What it does
 
-I put this first as I think projects must declare their purpose right away.
-
-*bcmp* is a simple CLI program to compare binary files and output its differences in a simple, practical and logical way.
+*bcmp* is a simple CLI program to compare binary files and output its differences in a simple and practical way.
 
 If you wonder why *cmp* was not enough for me, the [Motivations](#motivations) section explains that.
 
@@ -128,7 +126,7 @@ Output example showing differences:
 0d5e: df bc
 ```
 
-the position column, pads position with 0s so it can represent the larger position in file.This way all positions in file are the same width, so on a big file we can have this output:
+The position column, pads position with 0s so it can represent the larger position in file.This way all positions in file are the same width, so on a big file we can have this output:
 
 ```
 0001 4000 0000: 0c 0a
@@ -219,18 +217,18 @@ or
 cat file_03.bin | ./bcmp file_01.bin
 ```
 
-This is useful for pre processing the file, for instance with *head*, *tail*, or others.
+This is useful for preprocessing the file, for instance with *head*, *tail*, or others.
 
 
 ### Exit codes
 
-0: equal\
-1: different\
-2: error
+0: equal  
+1: different  
+2: error  
 
 ### Suppressing messages:
 
-If you want to suppress showing the differences and informative messages you can use the option s *-q* or *--quiet*. This does not suppress error messages.
+If you want to suppress showing the differences and informative messages you can use the options *-q* or *--quiet*. This does not suppress error messages.
 
 To suppress all messages including errors you use the options *-S* or *--silent*.
 
@@ -239,13 +237,15 @@ All those options do not suppress help and version messages if they are asked ex
 
 ## Motivations
 
-While developing the program (That was basically a weekend project that got out of hand, the repos are not public at the moment but they will once they are mature):
+While developing this program:
 
 * https://github.com/afgranero/ExtractAsmFromPages;
 * https://bitbucket.org/afgranero/extractasmfrompages;
 * https://codeberg.org/agranero/ExtractAsmFromPages;
 
-I had to compare the ROM file created from it with another. I used *GNU diffutils cmp*. I found it deficient in several things:
+(those repos are not public at the moment but they will once they are mature)
+
+I had to compare the ROM file created from it with another. I used *GNU diffutils cmp*. I found it deficient in several ways:
 
 * it does not show the differences by default, only when requested by an option;
 
@@ -275,7 +275,7 @@ I tested a few alternatives:
 
 ### Conclusion
 
-I just wanted a simple CLI tool that showed me only the differences in a practical way. I was so surprised and annoyed that no such a thing existed that I decided to make one.
+I just wanted a simple CLI tool that showed me only the differences in a practical way. I was so surprised and annoyed that no such thing existed that I decided to make one.
 
 ## Decisions
 
@@ -283,11 +283,11 @@ I made some decisions about the program and pondered a lot about them. This sect
 
 Those are:
 
-### Design
+### Design decisions
 
 * not to use any dependency outside the C Standard Library, this way it is easy to compile and install;
 
-* the program is too simple and monolithic, and without reusable parts; there are no unit tests, only black box tests, without using any test framework.  This way the tests are completely oblivious of the details of the program. If in the future I rewrite *bcmp* in Rust for instance those tests will still work;
+* the program is too simple and monolithic, and without reusable parts; there are no unit tests, only black box tests, without using any test framework. This way the tests are completely oblivious of the details of the program. For example, if in the future I rewrite *bcmp* in Rust those tests will still work;
 
 * each test in the *makefile* runs on a sub shell so it does not leave any  remains in variables to interfere in the other tests;
 
@@ -295,7 +295,7 @@ Those are:
 
 * the tests removing permissions are done in */tmp* directory as some cloud replication systems like Dropbox restore immediately removed permissions;
 
-* the files are always compared, even in quiet and silent modes. Files of different sizes are not considered different just because they are reported with different sizes. In files with problems the metadata of the file can be reporting wrong sizes while the files themselves are not corrupted. If you are suspicious of a file and and using *bcmp* to confirm and I do that I would not help;
+* the files are always compared, even in quiet and silent modes. Files of different sizes are not considered different just because they are reported with different sizes. In files with problems the metadata of the file can be reporting wrong sizes while the files themselves are not corrupted. If you are suspicious of a file and and using *bcmp* to confirm and if I did that it would not help;
 
 * the program is intended to work on any POSIX like environments:
 
@@ -306,7 +306,9 @@ Those are:
     * Windows 64-bit systems using MSYS2;
     * Windows 64-bit systems using Cygwin;
 
-### Interface
+   but for the moment I only testes it on Linux.
+
+### Interface decisions
 
 * short options use single letters as required by POSIX;
 
@@ -324,7 +326,7 @@ Those are:
 
 * *bcmp* shows the differences by default, contrary to *cmp* that does not show differences except when asked, probably because it is mainly intended for use in scripts for its return value;
 
-### Output formatting
+### Output formatting decisions
 
 * to show positions and values in hexadecimal without *0x* prefix for better readability using lower case letters because this is the standard used by *hexedit* and *hexdump*. Example:
 
@@ -335,7 +337,7 @@ Those are:
    0d5e: df bc
    ```
 
-* to show addresses in groups of four digits separated by spaces for  better readability; and to to pad address left with as much zeros the smallest multiple of 4 needed to address all positions on the biggest file, this way all lines are always aligned in columns, making easy to be processed but other commands, like *cut*, *sed*, *awk*, etc. Example:
+* to show addresses in groups of four digits separated by spaces for  better readability; and to pad addresses untild they left with as much zeros the smallest multiple of 4 needed to address all positions on the biggest file, this way all lines are always aligned in columns, making easy to be read and processed but other commands, like *cut*, *sed*, *awk*, etc. Example:
 
    ```
    0002 01ac: 14 d4
@@ -360,4 +362,4 @@ Not all things were decided, some features still can be added:
 
 * different offsets to skip for each file, like in *cmp*;
 
-
+* outputs on decimal and octal.
