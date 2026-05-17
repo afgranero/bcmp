@@ -48,7 +48,7 @@ make uninstall
 
 ## Testing
 
-The rationale for the way I made the tests is above at [Design](#design)
+The rationale for the way I made the tests is above at [Design decisions](#design-decisions)
 
 Before tests, go to */tests* directory.
 
@@ -66,10 +66,12 @@ make test_01
 
 ## Usage
 
+All examples assume you installed bcmp so you don´t need to use *./bcmp*.
+
 ### Help
 
 ```
-$ ./bcmp -h
+$ bcmp -h
 ```
 
 ```
@@ -91,7 +93,7 @@ Exit status is 0 if inputs are the same, 1 if different, 2 if error.
 #### Version
 
 ```
-$ ./bcmp -v
+$ bcmp -v
 ```
 
 ```
@@ -108,7 +110,7 @@ Max file size 9.22 EB.
 ### Simple files comparison:
 
 ```
-./bcmp file_01.bin file_02.bin
+bcmp file_01.bin file_02.bin
 ```
 
 Output for equal files:
@@ -126,7 +128,7 @@ Output example showing differences:
 0d5e: df bc
 ```
 
-The position column, pads position with 0s so it can represent the larger position in file.This way all positions in file are the same width, so on a big file we can have this output:
+The address column, pads position with 0s so it can represent the larger position in file. This way all positions in file are the same width, so on a big file we can have this output:
 
 ```
 0001 4000 0000: 0c 0a
@@ -151,7 +153,7 @@ Limit of 100 differences reached. Stopping.
 This can be overridden by options *-n* or *--limit* followed by a numeric parameter:
 
 ```
-./bcmp -n 3 file_01.bin file_04.bin
+bcmp -n 3 file_01.bin file_04.bin
 ```
 
 ```
@@ -164,7 +166,7 @@ Limit of 3 differences reached. Stopping.
 This also can be disabled completely passing 0 as parameter to *-n* or *--limit*:
 
 ```
-./bcmp -n 3 file_01.bin file_04.bin
+bcmp -n 3 file_01.bin file_04.bin
 ```
 
 ```
@@ -208,13 +210,13 @@ Notice also that in any numerical parameter of an option you can pass hexadecima
 You can use *-* for receiving one of the files from *stdin*:
 
 ```
-cat file_01.bin | ./bcmp - file_03.bin
+cat file_01.bin | bcmp - file_03.bin
 ```
 
 or
 
 ```
-cat file_03.bin | ./bcmp file_01.bin
+cat file_03.bin | bcmp file_01.bin
 ```
 
 This is useful for preprocessing the file, for instance with *head*, *tail*, or others.
@@ -320,7 +322,7 @@ Those are:
 
 * the *-S*, *--silent* options suppress all messages, even error ones, except help and version ones when explicitly asked for with * -h* and *--help* or *-v* and *--version* respectively.
 
-* the help screen to be shown when an improper option or parameter is used will return error code 2, if help is called explicitly, error code 0 is returned;
+* the help screen is shown when an improper option or parameter is used, and the program will return error code 2, if help is called explicitly, error code 0 is returned;
 
 * *bcmp* accepts *-* as one of the mandatory file name parameters to accept redirected input from *stdin*;
 
@@ -328,7 +330,7 @@ Those are:
 
 ### Output formatting decisions
 
-* to show positions and values in hexadecimal without *0x* prefix for better readability using lower case letters because this is the standard used by *hexedit* and *hexdump*. Example:
+* to show positions and values in hexadecimal without *0x* prefix for better readability and using lower case letters because this is the standard used by *hexedit* and *hexdump*. Example:
 
    ```
    0109: a4 08
@@ -337,7 +339,7 @@ Those are:
    0d5e: df bc
    ```
 
-* to show addresses in groups of four digits separated by spaces for  better readability; and to pad addresses untild they left with as much zeros the smallest multiple of 4 needed to address all positions on the biggest file, this way all lines are always aligned in columns, making easy to be read and processed but other commands, like *cut*, *sed*, *awk*, etc. Example:
+* to show addresses in groups of four digits separated by spaces for  better readability, and to pad addresses until they are left with as much zeros as the smallest multiple of 4 needed to address all positions on the biggest file, this way all lines are always aligned in columns, making easy to be read and processed but other commands, like *cut*, *sed*, *awk*, etc. Example:
 
    ```
    0002 01ac: 14 d4
