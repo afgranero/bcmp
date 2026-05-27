@@ -1,0 +1,2 @@
+05ec: d9 ea
+1000: EOF on file_01.bin
