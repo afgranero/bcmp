@@ -308,7 +308,7 @@ Those are:
     * Windows 64-bit systems using MSYS2;
     * Windows 64-bit systems using Cygwin;
 
-   but for the moment I only testes it on Linux.
+   but for the moment I only tested it on Linux.
 
 ### Interface decisions
 
