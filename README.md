@@ -33,7 +33,7 @@ To remove the compiled executable:
 make clean
 ```
 
-To install it on your system (requires *sudo*)
+To install it on your system (requires *sudo*):
 
 ```
 make install
@@ -48,7 +48,7 @@ make uninstall
 
 ## Testing
 
-The rationale for the way I made the tests is above in [Design decisions](#design-decisions)
+The rationale for the way I made the tests is above in [Design decisions](#design-decisions).
 
 Before tests, go to */tests* directory.
 
@@ -128,7 +128,7 @@ Output example showing differences:
 0d5e: df bc
 ```
 
-The address column, pads positions with 0s so it can represent the larger position in file. This way all positions in file are the same width, so on a big file we can have this output:
+The address column pads positions with 0s so it can represent the larger position in the file. This way all positions in the file are the same width, so on a big file we can have this output:
 
 ```
 0001 4000 0000: 0c 0a
@@ -251,7 +251,7 @@ I had to compare the ROM file created from it with another. I used *GNU diffutil
 
 * it does not show the differences by default, only when requested by an option;
 
-* it counts difference positions from 1, not 0, what makes sense if we are talking of chars, not bytes where using positions like addresses makes more sense;
+* it counts difference positions from 1, not 0, which makes sense if we are talking of chars, not bytes where using positions like addresses makes more sense;
 
 * it shows positions in decimal and byte differences values in octal, without even bothering to make it explicit. I see no point of using octal to anything other than things that use 3 bits, like *chmod* permissions.
 
@@ -273,7 +273,7 @@ I tested a few alternatives:
 
 * *dhex* (https://github.com/cxd4/dhex)
 
-   An hexadecimal editor with a compare mode.
+   A hexadecimal editor with a compare mode.
 
 ### Conclusion
 
@@ -295,38 +295,38 @@ Those are:
 
 * the tests for big files use sparse files created with *truncate* in the */tmp* directory (or, if another is defined in *TEMPDIR* variable this is used) and the file is deleted as soon as it is used; this avoids problems with cloud replication systems like Dropbox;
 
-* the tests removing permissions are done in */tmp* directory as some cloud replication systems like Dropbox restore immediately removed permissions;
+* the tests removing permissions are done in the */tmp* directory as some cloud replication systems like Dropbox restore immediately removed permissions;
 
-* the files are always compared, even in quiet and silent modes. Files of different sizes are not considered different just because they are reported with different sizes. In files with problems the metadata of the file can be reporting wrong sizes while the files themselves are not corrupted. If you are suspicious of a file and using *bcmp* to confirm and if I did that it would not help;
+* the files are always compared, even in quiet and silent modes. Files of different sizes are not considered different just because they are reported with different sizes. In files with problems the metadata of the file can be reporting wrong sizes while the files themselves are not corrupted. If you are suspicious of a file and use *bcmp* to confirm and if I did that it would not help;
 
-* the program is intended to work on any POSIX like environments:
+* the program is intended to work on these POSIX-like environments:
 
     * Linux 64-bit systems;
     * Linux 32-bit systems;
-    * MacOS;
+    * macOS;
     * Windows 64-bit systems using Windows Subsystem for Linux;
     * Windows 64-bit systems using MSYS2;
     * Windows 64-bit systems using Cygwin;
 
-   but for the moment I only tested it on Linux.
+   but for the moment I only tested it on 64-bit Linux.
 
 ### Interface decisions
 
 * short options use single letters as required by POSIX;
 
-* the long options names follow *kebab-case* (lowercase letters separated by hyphens), this is not a POSIX requirement, but it is commonly used by apps;
+* the long option names follow *kebab-case* (lowercase letters separated by hyphens), this is not a POSIX requirement, but it is commonly used by apps;
 
 * options that require a numeric parameter can receive a decimal, hexadecimal or octal parameter with the proper prefix, this is not exactly a decision, but a consequence of using *strtoull* function to parse them;
 
 * the *-q*, *--quiet* options suppress showing the differences and informative messages but not error messages sent to *stderr*;
 
-* the *-S*, *--silent* options suppress all messages, even error ones, except help and version ones when explicitly asked for with * -h* and *--help* or *-v* and *--version* respectively.
+* the *-S*, *--silent* options suppress all messages, even error ones, except help and version ones when explicitly asked for with *-h* and *--help* or *-v* and *--version* respectively.
 
 * the help screen is shown when an improper option or parameter is used, and the program will return error code 2, if help is called explicitly, error code 0 is returned;
 
 * *bcmp* accepts *-* as one of the mandatory file name parameters to accept redirected input from *stdin*;
 
-* *bcmp* shows the differences by default, contrary to *cmp*, that does not show differences except when asked, probably because it is mainly intended for use in scripts for its return value;
+* *bcmp* shows the differences by default, contrary to *cmp*, which does not show differences except when asked, probably because it is mainly intended for use in scripts for its return value;
 
 ### Output formatting decisions
 
@@ -339,7 +339,7 @@ Those are:
    0d5e: df bc
    ```
 
-* to show addresses in groups of four digits separated by spaces for  better readability, and to pad addresses until they are left with as much zeros as the smallest multiple of 4 needed to address all positions on the biggest file, this way all lines are always aligned in columns, making easy to read and process by other commands, like *cut*, *sed*, *awk*, etc. Example:
+* to show addresses in groups of four digits separated by spaces for better readability, and to pad addresses until they are left with as much zeros as the smallest multiple of 4 needed to address all positions on the biggest file, this way all lines are always aligned in columns, making it easy to read and process by other commands, like *cut*, *sed*, *awk*, etc. Example:
 
    ```
    0002 01ac: 14 d4
@@ -364,4 +364,4 @@ Not all things were decided; some features still can be added:
 
 * different offsets to skip for each file, like in *cmp*;
 
-* outputs on decimal and octal.
+* outputs in decimal and octal.
